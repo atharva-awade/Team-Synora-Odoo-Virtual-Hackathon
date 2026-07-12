@@ -1,6 +1,7 @@
-import { Truck, CheckCircle2, Wrench, Route, Clock, Users, Gauge } from "lucide-react";
+import { Truck, CheckCircle2, Wrench, Route, Clock, Users, Gauge, ShieldAlert } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { getDashboardStats } from "@/lib/services/stats";
+import { getCompliance } from "@/lib/services/compliance";
 import { KpiCard } from "@/components/ui/Kpi";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { Card } from "@/components/ui/primitives";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const user = await getSession();
   const s = await getDashboardStats();
+  const comp = await getCompliance();
 
   const statusBars = [
     { label: "Available", value: s.available, color: "#34d399" },
@@ -94,6 +96,41 @@ export default async function DashboardPage() {
             <span className="font-medium text-ink">
               {formatKm(s.recentTrips.reduce((a, t) => a + (t.plannedDistanceKm || 0), 0))}
             </span>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <h2 className="mb-3 flex items-center gap-2 font-semibold">
+            <ShieldAlert className="h-4 w-4 text-amber-400" /> Licence Compliance Radar
+          </h2>
+          <div className="space-y-2">
+            {comp.licenceAlerts.length === 0 && <div className="text-sm text-muted">All driver licences are valid for 60+ days.</div>}
+            {comp.licenceAlerts.map((a) => (
+              <div key={a.id} className="flex items-center justify-between rounded-lg border border-line bg-surface-2/50 px-3 py-2 text-sm">
+                <div><span className="font-medium">{a.name}</span> <span className="mono text-xs text-muted">{a.licenseNo}</span></div>
+                <span className={a.days < 0 ? "text-rose-300" : a.days <= 30 ? "text-amber-300" : "text-muted"}>
+                  {a.days < 0 ? `expired ${-a.days}d ago` : `${a.days}d left`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card className="p-5">
+          <h2 className="mb-3 flex items-center gap-2 font-semibold">
+            <Wrench className="h-4 w-4 text-accent" /> Predictive Maintenance
+          </h2>
+          <div className="space-y-2">
+            {comp.serviceAlerts.length === 0 && <div className="text-sm text-muted">No vehicles are near their service interval.</div>}
+            {comp.serviceAlerts.map((v) => (
+              <div key={v.id} className="flex items-center justify-between rounded-lg border border-line bg-surface-2/50 px-3 py-2 text-sm">
+                <div><span className="mono text-xs">{v.regNo}</span> <span className="text-muted">{v.name}</span></div>
+                <span className={v.remaining <= 0 ? "text-rose-300" : v.remaining <= 1000 ? "text-amber-300" : "text-muted"}>
+                  {v.remaining <= 0 ? `overdue by ${-v.remaining} km` : `service in ${v.remaining} km`}
+                </span>
+              </div>
+            ))}
           </div>
         </Card>
       </div>

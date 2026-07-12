@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Rocket, Loader2, Check, X, Send, AlertTriangle } from "lucide-react";
+import { Rocket, Loader2, Check, X, Send, AlertTriangle, Sparkles } from "lucide-react";
 import { jsonFetch } from "@/lib/client";
 import { Button, Input, Select, Field, Card } from "@/components/ui/primitives";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -34,6 +34,8 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
   const [completing, setCompleting] = useState<Trip | null>(null);
   const [odo, setOdo] = useState("");
   const [fuel, setFuel] = useState("");
+  const [suggestion, setSuggestion] = useState<any>(null);
+  const [suggesting, setSuggesting] = useState(false);
 
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: () => jsonFetch("/api/trips"), refetchInterval: 4000 });
   const vehiclesQ = useQuery({ queryKey: ["vehicles", "dispatchable"], queryFn: () => jsonFetch("/api/vehicles?dispatchable=1") });
@@ -76,6 +78,23 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
   });
 
   const set = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
+
+  async function smartSuggest() {
+    setSuggesting(true);
+    try {
+      const p = new URLSearchParams({ source: form.source, destination: form.destination, cargo: String(form.cargoWeightKg) });
+      const res: any = await jsonFetch(`/api/trips/recommend?${p.toString()}`);
+      if (res.ok) {
+        setForm((f: any) => ({ ...f, vehicleId: res.vehicle.id, driverId: res.driver.id }));
+        setSuggestion(res);
+      } else {
+        toast(res.reason || "No eligible pairing available", "info");
+      }
+    } catch {
+      toast("Could not compute a suggestion", "error");
+    }
+    setSuggesting(false);
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -120,6 +139,20 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
               <span className="text-muted">Planned distance</span>
               <span className="mono font-medium">{distance} km</span>
             </div>
+
+            <Button type="button" variant="secondary" onClick={smartSuggest} disabled={suggesting} className="w-full">
+              {suggesting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="h-4 w-4 text-accent" /> Smart Suggest optimal pairing</>}
+            </Button>
+            {suggestion?.ok && (
+              <div className="rounded-lg border border-accent/30 bg-accent/10 px-3 py-2.5 animate-fade-in">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-accent">Recommended pairing</span>
+                  <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent">{suggestion.matchPct}% match</span>
+                </div>
+                <div className="mt-1 text-sm text-ink">{suggestion.vehicle.regNo} + {suggestion.driver.name}</div>
+                <div className="mt-1 text-xs leading-relaxed text-muted">{suggestion.reason}</div>
+              </div>
+            )}
 
             {overCapacity && selectedVehicle && (
               <div className="flex items-start gap-2 rounded-lg border border-dashed border-rose-500/50 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-300">
