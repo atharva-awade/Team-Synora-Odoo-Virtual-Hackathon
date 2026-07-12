@@ -6,6 +6,7 @@ import { useGLTF, ContactShadows } from "@react-three/drei";
 import { useLayoutEffect } from "react";
 import * as THREE from "three";
 import { useStory } from "@/lib/story-store";
+import { WebGLBoundary } from "./WebGLBoundary";
 
 // The camera always looks at the truck center, so the truck stays dead-center
 // on screen at every scroll position. Only the camera POSITION orbits.
@@ -65,11 +66,12 @@ function Rig() {
 
 export default function StoryCanvas() {
   return (
+    <WebGLBoundary fallback={null}>
     <Canvas
       shadows
-      dpr={[1, 1.8]}
+      dpr={[1, 1.5]}
       camera={{ position: [0, 2.4, 6], fov: 40 }}
-      gl={{ alpha: true, antialias: true }}
+      gl={{ alpha: true, antialias: true, powerPreference: "default", failIfMajorPerformanceCaveat: false }}
       style={{ background: "transparent" }}
     >
       <ambientLight intensity={0.6} />
@@ -82,6 +84,7 @@ export default function StoryCanvas() {
       <ContactShadows position={[0, 0, 0]} opacity={0.28} scale={13} blur={3.4} far={6} color="#2b1e2e" />
       <Rig />
     </Canvas>
+    </WebGLBoundary>
   );
 }
 

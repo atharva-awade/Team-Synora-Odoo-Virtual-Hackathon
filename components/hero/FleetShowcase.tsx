@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF, OrbitControls, ContactShadows, Clone } from "@react-three/drei";
 import * as THREE from "three";
+import { WebGLBoundary } from "./WebGLBoundary";
 
 const STATUS_COLOR: Record<string, string> = {
   AVAILABLE: "#34d399",
@@ -78,28 +79,57 @@ function Yard({ vehicles }: { vehicles: V[] }) {
   );
 }
 
+// Clean 2D grid shown when a WebGL context is unavailable (context limit hit,
+// GPU blocked). Keeps the fleet readable instead of crashing the page.
+function Fallback2D({ vehicles }: { vehicles: V[] }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center p-6">
+      <div className="grid max-h-full w-full max-w-2xl grid-cols-2 gap-2.5 overflow-auto sm:grid-cols-3">
+        {vehicles.map((v) => (
+          <div key={v.id} className="glass flex items-center gap-2.5 rounded-xl px-3 py-2.5">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[v.status] || "#8b8b95" }} />
+            <div className="min-w-0">
+              <div className="mono truncate text-xs font-medium">{v.regNo}</div>
+              <div className="truncate text-[11px] text-muted">{v.type}</div>
+            </div>
+          </div>
+        ))}
+        {vehicles.length === 0 && <div className="col-span-full py-8 text-center text-sm text-muted">No vehicles to display.</div>}
+      </div>
+    </div>
+  );
+}
+
 export default function FleetShowcase({ vehicles }: { vehicles: V[] }) {
   return (
-    <Canvas shadows dpr={[1, 1.8]} camera={{ position: [7, 5.5, 8], fov: 42 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[8, 13, 7]} intensity={1.5} castShadow shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[-6, 5, -6]} intensity={0.4} color="#875A7B" />
-      <Suspense fallback={null}>
-        {vehicles.length > 0 && <Yard vehicles={vehicles} />}
-      </Suspense>
-      <ContactShadows position={[0, 0, 0]} opacity={0.4} scale={30} blur={2.4} far={12} />
-      <OrbitControls
-        enablePan={false}
-        autoRotate
-        autoRotateSpeed={0.5}
-        enableZoom
-        minDistance={4}
-        maxDistance={20}
-        minPolarAngle={0.15}
-        maxPolarAngle={Math.PI / 2.05}
-        target={[0, 0.4, 0]}
-      />
-    </Canvas>
+    <WebGLBoundary fallback={<Fallback2D vehicles={vehicles} />}>
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [7, 5.5, 8], fov: 42 }}
+        gl={{ alpha: true, antialias: true, powerPreference: "default", failIfMajorPerformanceCaveat: false }}
+        style={{ background: "transparent" }}
+      >
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[8, 13, 7]} intensity={1.5} castShadow shadow-mapSize={[1024, 1024]} />
+        <directionalLight position={[-6, 5, -6]} intensity={0.4} color="#875A7B" />
+        <Suspense fallback={null}>
+          {vehicles.length > 0 && <Yard vehicles={vehicles} />}
+        </Suspense>
+        <ContactShadows position={[0, 0, 0]} opacity={0.4} scale={30} blur={2.4} far={12} />
+        <OrbitControls
+          enablePan={false}
+          autoRotate
+          autoRotateSpeed={0.5}
+          enableZoom
+          minDistance={4}
+          maxDistance={20}
+          minPolarAngle={0.15}
+          maxPolarAngle={Math.PI / 2.05}
+          target={[0, 0.4, 0]}
+        />
+      </Canvas>
+    </WebGLBoundary>
   );
 }
 
