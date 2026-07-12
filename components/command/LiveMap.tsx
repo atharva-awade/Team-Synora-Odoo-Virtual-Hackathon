@@ -3,18 +3,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DeckGL from "@deck.gl/react";
-import { MapView } from "@deck.gl/core";
+import { MapView, LightingEffect, AmbientLight, DirectionalLight } from "@deck.gl/core";
 import { TileLayer } from "@deck.gl/geo-layers";
 import { BitmapLayer, PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { ScenegraphLayer } from "@deck.gl/mesh-layers";
 import { GLTFLoader } from "@loaders.gl/gltf";
-import { Play, Pause, X, Truck as TruckIcon } from "lucide-react";
+import { Play, Pause, X, Truck as TruckIcon, Maximize2, Minimize2 } from "lucide-react";
 import { jsonFetch } from "@/lib/client";
 import { formatINR } from "@/lib/utils";
 
 const INITIAL_VIEW = { longitude: 72.7, latitude: 22.6, zoom: 6.6, pitch: 45, bearing: 0 };
 // Model forward-facing yaw offset (tune if headlights point the wrong way).
 const ORIENT_YAW = 90;
+
+// Bright lighting so the 3D trucks read light/near-original instead of dark.
+const lightingEffect = new LightingEffect({
+  ambient: new AmbientLight({ color: [255, 255, 255], intensity: 3.2 }),
+  dir1: new DirectionalLight({ color: [255, 255, 255], intensity: 1.4, direction: [-1, -3, -1] }),
+  dir2: new DirectionalLight({ color: [255, 255, 255], intensity: 0.8, direction: [2, -1, 1] }),
+});
 
 function bearing(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
   const rad = Math.PI / 180;
@@ -53,11 +60,18 @@ export function LiveMap() {
   const [time, setTime] = useState(0);
   const [dark, setDark] = useState(true);
   const [routes, setRoutes] = useState<Record<string, number[][]>>({});
+  const [fullscreen, setFullscreen] = useState(false);
   const speedRef = useRef(1);
   const clockRef = useRef(0);
 
   const { data } = useQuery({ queryKey: ["trips"], queryFn: () => jsonFetch("/api/trips"), refetchInterval: 8000 });
   useEffect(() => { speedRef.current = playing ? speed : 0; }, [playing, speed]);
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFullscreen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [fullscreen]);
 
   // theme detection
   useEffect(() => {
@@ -129,8 +143,8 @@ export function LiveMap() {
   const activeCount = (data?.trips ?? []).filter((t: any) => t.status === "DISPATCHED").length;
 
   const tileUrl = dark
-    ? "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-    : "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png";
+    ? "https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png"
+    : "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
 
   const layers = [
     new TileLayer({
@@ -172,11 +186,15 @@ export function LiveMap() {
   ];
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-2xl" style={{ background: dark ? "#070810" : "#dfe3ea" }}>
+    <div
+      className={`${fullscreen ? "fixed inset-0 z-[70]" : "relative h-full w-full rounded-2xl"} overflow-hidden`}
+      style={{ background: dark ? "#070810" : "#dfe3ea" }}
+    >
       <DeckGL
         views={new MapView({ repeat: true })}
         initialViewState={INITIAL_VIEW}
         controller={true}
+        effects={[lightingEffect]}
         layers={layers}
         onClick={(info: any) => { if (info?.object?.trip) setSelected(info.object.trip); }}
         getCursor={({ isHovering }: any) => (isHovering ? "pointer" : "grab")}
@@ -201,8 +219,16 @@ export function LiveMap() {
         <span className="text-white/50">click a vehicle or route</span>
       </div>
 
+      <button
+        onClick={() => setFullscreen((f) => !f)}
+        title={fullscreen ? "Exit fullscreen (Esc)" : "Open fullscreen"}
+        className="absolute bottom-4 right-4 z-20 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-[11px] font-medium text-white/80 backdrop-blur transition-colors hover:bg-black/70 hover:text-white"
+      >
+        {fullscreen ? <><Minimize2 className="h-3.5 w-3.5" /> Exit</> : <><Maximize2 className="h-3.5 w-3.5" /> Fullscreen</>}
+      </button>
+
       {selected && (
-        <div className="absolute bottom-4 right-4 z-10 w-72 rounded-2xl border border-white/10 bg-black/70 p-4 text-white backdrop-blur-md animate-fade-in">
+        <div className="absolute bottom-16 right-4 z-10 w-72 rounded-2xl border border-white/10 bg-black/70 p-4 text-white backdrop-blur-md animate-fade-in">
           <div className="flex items-start justify-between">
             <div className="mono text-sm font-semibold text-accent">{selected.code}</div>
             <button onClick={() => setSelected(null)} className="text-white/50 hover:text-white"><X className="h-4 w-4" /></button>
