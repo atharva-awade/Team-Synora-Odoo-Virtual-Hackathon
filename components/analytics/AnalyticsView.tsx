@@ -41,7 +41,7 @@ export function AnalyticsView({ data }: { data: Data }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Metric icon={<Gauge className="h-4 w-4" />} label="Fuel Efficiency" value={`${totals.fleetEfficiency} km/L`} accent="#e8793a" />
+        <Metric icon={<Gauge className="h-4 w-4" />} label="Fuel Efficiency" value={`${totals.fleetEfficiency} km/L`} accent="#714B67" />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Fleet Utilization" value={`${totals.utilization}%`} accent="#34d399" />
         <Metric icon={<Wallet className="h-4 w-4" />} label="Operational Cost" value={formatINR(totals.totalOpCost)} accent="#38bdf8" />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Avg Vehicle ROI" value={`${totals.avgRoi}%`} accent="#a78bfa" />

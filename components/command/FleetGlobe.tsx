@@ -38,7 +38,7 @@ export function FleetGlobe() {
     .map((t: any) => ({
       startLat: t.srcLat, startLng: t.srcLng, endLat: t.destLat, endLng: t.destLng,
       status: t.status,
-      color: t.status === "DISPATCHED" ? ["#f5a623", "#e8793a"] : ["#4f8fff", "#4f8fff"],
+      color: t.status === "DISPATCHED" ? ["#875A7B", "#714B67"] : ["#4f8fff", "#4f8fff"],
       label: `${t.code} · ${t.source} to ${t.destination} · ${t.status}`,
     }));
 
@@ -104,7 +104,7 @@ export function FleetGlobe() {
         backgroundColor="rgba(0,0,0,0)"
         {...(material ? { globeMaterial: material } : {})}
         showAtmosphere
-        atmosphereColor="#e8793a"
+        atmosphereColor="#714B67"
         atmosphereAltitude={0.2}
         arcsData={arcs}
         arcColor={(d: any) => d.color}
@@ -117,7 +117,7 @@ export function FleetGlobe() {
         pointsData={points}
         pointLat="lat"
         pointLng="lng"
-        pointColor={() => "#f5a623"}
+        pointColor={() => "#875A7B"}
         pointAltitude={0.012}
         pointRadius={0.26}
         pointLabel={(d: any) => d.name}

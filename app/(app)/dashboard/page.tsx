@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   const statusBars = [
     { label: "Available", value: s.available, color: "#34d399" },
     { label: "On Trip", value: s.onTrip, color: "#38bdf8" },
-    { label: "In Shop", value: s.inShop, color: "#f5a623" },
+    { label: "In Shop", value: s.inShop, color: "#875A7B" },
     { label: "Retired", value: s.retired, color: "#fb7185" },
   ];
   const maxBar = Math.max(1, ...statusBars.map((b) => b.value));
@@ -37,13 +37,13 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-7">
-        <KpiCard label="Active Vehicles" value={s.activeVehicles} accent="#e8793a" icon={<Truck className="h-4 w-4" />} />
+        <KpiCard label="Active Vehicles" value={s.activeVehicles} accent="#714B67" icon={<Truck className="h-4 w-4" />} />
         <KpiCard label="Available" value={s.available} accent="#34d399" icon={<CheckCircle2 className="h-4 w-4" />} />
-        <KpiCard label="In Maintenance" value={s.inShop} accent="#f5a623" icon={<Wrench className="h-4 w-4" />} />
+        <KpiCard label="In Maintenance" value={s.inShop} accent="#875A7B" icon={<Wrench className="h-4 w-4" />} />
         <KpiCard label="Active Trips" value={s.activeTrips} accent="#38bdf8" icon={<Route className="h-4 w-4" />} />
         <KpiCard label="Pending Trips" value={s.pendingTrips} accent="#a78bfa" icon={<Clock className="h-4 w-4" />} />
         <KpiCard label="Drivers On Duty" value={s.driversOnDuty} accent="#f472b6" icon={<Users className="h-4 w-4" />} />
-        <KpiCard label="Fleet Utilization" value={s.utilization} suffix="%" accent="#e8793a" icon={<Gauge className="h-4 w-4" />} />
+        <KpiCard label="Fleet Utilization" value={s.utilization} suffix="%" accent="#714B67" icon={<Gauge className="h-4 w-4" />} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

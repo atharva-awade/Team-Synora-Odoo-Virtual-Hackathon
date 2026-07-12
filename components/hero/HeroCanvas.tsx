@@ -64,7 +64,7 @@ export default function HeroCanvas({ station }: { station: number }) {
     >
       <ambientLight intensity={0.55} />
       <directionalLight position={[6, 9, 6]} intensity={1.6} castShadow shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[-6, 4, -6]} intensity={0.6} color="#e8793a" />
+      <directionalLight position={[-6, 4, -6]} intensity={0.6} color="#714B67" />
       <spotLight position={[0, 8, 0]} intensity={0.4} angle={0.6} penumbra={1} />
       <Truck />
       <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={22} blur={2.6} far={8} />
