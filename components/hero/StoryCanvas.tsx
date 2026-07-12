@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, ContactShadows } from "@react-three/drei";
 import { useLayoutEffect } from "react";
@@ -8,15 +9,15 @@ import { useStory } from "@/lib/story-store";
 
 // The camera always looks at the truck center, so the truck stays dead-center
 // on screen at every scroll position. Only the camera POSITION orbits.
-const TARGET: [number, number, number] = [0, 1.4, 0];
+const TARGET: [number, number, number] = [0, 1.5, 0];
 const KEYS: [number, number, number][] = [
-  [0, 3.0, 8.0], // 0 reveal (pulls in)
-  [4.2, 2.0, 3.0], // 1 dispatch (front 3/4)
-  [5.0, 1.8, -1.2], // 2 tracking (right side)
-  [-4.2, 2.0, -3.0], // 3 maintenance (rear-left)
-  [2.6, 1.2, 3.8], // 4 fuel (front low)
-  [0.2, 5.5, 3.0], // 5 analytics (top down, still centered)
-  [3.4, 2.2, 2.4], // 6 compliance (cabin)
+  [0, 2.4, 6.0], // 0 reveal (close, near-level so the truck fills screen 1)
+  [4.4, 2.1, 3.0], // 1 dispatch (front 3/4)
+  [5.2, 1.9, -1.4], // 2 tracking (right side)
+  [-4.4, 2.1, -3.2], // 3 maintenance (rear-left)
+  [2.8, 1.3, 4.0], // 4 fuel (front low)
+  [0.2, 5.6, 3.2], // 5 analytics (top down, still centered)
+  [3.6, 2.3, 2.5], // 6 compliance (cabin)
 ];
 
 function lerp3(a: number[], b: number[], t: number): [number, number, number] {
@@ -36,7 +37,7 @@ function Truck() {
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 5.6 / maxDim;
+    const scale = 6 / maxDim;
     scene.scale.setScalar(scale);
     scene.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
     scene.traverse((o: any) => {
@@ -56,7 +57,7 @@ function Rig() {
   useFrame(() => {
     const p = sample(useStory.getState().progress);
     desired.set(p[0], p[1], p[2]);
-    camera.position.lerp(desired, 0.06);
+    camera.position.lerp(desired, 0.1);
     camera.lookAt(look);
   });
   return null;
@@ -67,7 +68,7 @@ export default function StoryCanvas() {
     <Canvas
       shadows
       dpr={[1, 1.8]}
-      camera={{ position: [0, 3, 8], fov: 40 }}
+      camera={{ position: [0, 2.4, 6], fov: 40 }}
       gl={{ alpha: true, antialias: true }}
       style={{ background: "transparent" }}
     >
@@ -75,7 +76,9 @@ export default function StoryCanvas() {
       <directionalLight position={[6, 10, 6]} intensity={1.8} castShadow shadow-mapSize={[1024, 1024]} />
       <directionalLight position={[-6, 4, -6]} intensity={0.6} color="#e8793a" />
       <spotLight position={[0, 9, 0]} intensity={0.5} angle={0.6} penumbra={1} />
-      <Truck />
+      <Suspense fallback={null}>
+        <Truck />
+      </Suspense>
       <ContactShadows position={[0, 0, 0]} opacity={0.45} scale={26} blur={2.6} far={9} />
       <Rig />
     </Canvas>

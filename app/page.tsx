@@ -18,7 +18,7 @@ const StoryCanvas = dynamic(() => import("@/components/hero/StoryCanvas"), {
 });
 
 const CHAPTERS = [
-  { key: "intro", eyebrow: "Team Synora · Odoo Hackathon 2026", desc: "Vehicles, drivers, dispatch, maintenance and cost unified into one real-time operations platform.", intro: true, icon: Rocket },
+  { key: "intro", eyebrow: "Team Synora · Odoo Hackathon 2026", icon: Rocket },
   { key: "dispatch", eyebrow: "01 · Dispatch", title: "Smart Dispatch", desc: "Assign the optimal vehicle and driver with explainable scoring and hard business-rule enforcement.", icon: Rocket },
   { key: "tracking", eyebrow: "02 · Live Tracking", title: "Live Tracking", desc: "Watch every dispatched trip move along its route on a real map, in real time.", icon: MapPin },
   { key: "maintenance", eyebrow: "03 · Maintenance", title: "Predictive Maintenance", desc: "Forecast service intervals and pull vehicles from the dispatch pool automatically.", icon: Wrench },
@@ -57,37 +57,78 @@ const ROLES = [
 
 const MARQUEE = ["Dispatch", "Track", "Maintain", "Optimize", "Comply"];
 
-function ChapterCard() {
+function TopHero() {
+  const progress = useStory((s) => s.progress);
+  const op = Math.max(0, Math.min(1, 1 - progress * 9));
+  return (
+    <div
+      className="pointer-events-none absolute inset-x-0 top-[16%] z-20 flex flex-col items-center px-5 text-center"
+      style={{ opacity: op, transform: `translateY(${(1 - op) * -16}px)` }}
+    >
+      <div className="glass mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs text-accent">
+        <Rocket className="h-3.5 w-3.5" /> Team Synora · Odoo Hackathon 2026
+      </div>
+      <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+        The living <span className="text-gradient">3D command center</span> for your fleet.
+      </h1>
+      <p className="mx-auto mt-4 max-w-md text-sm text-muted sm:text-base">
+        Vehicles, drivers, dispatch, maintenance and cost unified into one real-time operations platform.
+      </p>
+    </div>
+  );
+}
+
+function BottomBar() {
   const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
   const c = CHAPTERS[idx];
   const Icon = c.icon;
   return (
-    <div className="pointer-events-none flex flex-col items-center px-4">
-      <div key={c.key} className="panel animate-fade-in w-full max-w-xl rounded-2xl p-6 text-center">
-        <div className="mb-2 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-accent">
-          <Icon className="h-4 w-4" /> {c.eyebrow}
+    <div className="absolute inset-x-0 bottom-8 z-20 flex flex-col items-center px-4">
+      {idx === 0 ? (
+        <div className="flex flex-col items-center gap-4">
+          <Link
+            href="/login"
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110"
+          >
+            <Rocket className="h-4 w-4" /> Launch Command Center
+          </Link>
+          <div className="flex items-center gap-1.5 text-xs text-muted">
+            Scroll to explore <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
+          </div>
         </div>
-        {c.intro ? (
-          <>
-            <h1 className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
-              The living <span className="text-gradient">3D command center</span> for your fleet.
-            </h1>
-            <p className="mx-auto mt-2.5 max-w-md text-sm text-muted">{c.desc}</p>
-            <Link href="/login" className="pointer-events-auto mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-2.5 text-sm font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
-              <Rocket className="h-4 w-4" /> Launch Command Center
-            </Link>
-          </>
-        ) : (
-          <>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{c.title}</h2>
-            <p className="mx-auto mt-2.5 max-w-md text-sm text-muted">{c.desc}</p>
-          </>
-        )}
-      </div>
+      ) : (
+        <div key={c.key} className="glass-strong animate-fade-in max-w-md rounded-2xl p-5 text-center">
+          <div className="mb-1.5 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-accent">
+            <Icon className="h-4 w-4" /> {c.eyebrow}
+          </div>
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">{c.title}</h2>
+          <p className="mt-1.5 text-sm text-muted">{c.desc}</p>
+        </div>
+      )}
       <div className="mt-4 flex gap-2">
         {CHAPTERS.map((ch, i) => (
           <span key={ch.key} className={`h-1.5 rounded-full transition-all duration-300 ${i === idx ? "w-8 bg-accent" : "w-1.5 bg-muted/40"}`} />
         ))}
+      </div>
+    </div>
+  );
+}
+
+function HudChips() {
+  const op = useStory((s) => Math.max(0, Math.min(1, 1 - s.progress * 9)));
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10 hidden lg:block" style={{ opacity: op }}>
+      <div className="glass absolute left-[7%] top-[34%] rounded-xl px-3.5 py-2.5">
+        <div className="flex items-center gap-2 text-sm"><span className="live-dot" /> 2 active trips</div>
+        <div className="mt-0.5 text-[11px] text-muted">Ahmedabad · Rajkot</div>
+      </div>
+      <div className="glass absolute right-[7%] top-[42%] rounded-xl px-3.5 py-2.5 text-right">
+        <div className="text-[11px] text-muted">Fleet utilization</div>
+        <div className="text-lg font-semibold">81%</div>
+      </div>
+      <div className="glass absolute right-[13%] top-[64%] rounded-xl px-3.5 py-2.5 text-right">
+        <div className="text-[11px] text-muted">On-time rate</div>
+        <div className="text-lg font-semibold">96%</div>
       </div>
     </div>
   );
@@ -98,7 +139,7 @@ export default function Landing() {
   const [active, setActive] = useState(true);
 
   useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.09 });
+    const lenis = new Lenis({ lerp: 0.08 });
     let raf = 0;
     const loop = (t: number) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
@@ -110,7 +151,7 @@ export default function Landing() {
       trigger: stageRef.current,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
+      scrub: 1,
       onUpdate: (self) => useStory.getState().set(self.progress),
       onToggle: (self) => setActive(self.isActive),
     });
@@ -126,7 +167,7 @@ export default function Landing() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/60 backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/50 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <Brand />
           <div className="flex items-center gap-3">
@@ -139,27 +180,24 @@ export default function Landing() {
       </header>
 
       {/* Fixed 3D stage: truck locked at screen center, camera orbits on scroll */}
-      <div className={`fixed inset-0 z-0 transition-opacity duration-500 ${active ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        <div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 62%)" }}
-        />
+      <div className={`pointer-events-none fixed inset-0 z-0 transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}>
+        <div className="absolute inset-0 grid-bg opacity-[0.35]" />
+        <div className="absolute -left-40 top-1/4 h-[36rem] w-[36rem] rounded-full bg-accent/10 blur-[130px]" />
+        <div className="absolute -right-40 bottom-1/4 h-[32rem] w-[32rem] rounded-full bg-blue/10 blur-[130px]" />
         <div className="absolute inset-0">
           <StoryCanvas />
         </div>
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse at 50% 62%, transparent 42%, color-mix(in srgb, var(--bg) 78%, transparent) 100%)" }}
+        />
+        <HudChips />
+        <TopHero />
+        <BottomBar />
       </div>
 
-      {/* Fixed chapter card */}
-      <div className={`fixed inset-x-0 bottom-8 z-20 transition-opacity duration-500 ${active ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        <ChapterCard />
-      </div>
-
-      {/* Scroll spacer that drives the story (transparent, does not block) */}
+      {/* Scroll spacer that drives the story */}
       <section ref={stageRef} className="pointer-events-none relative z-10" style={{ height: "600vh" }} aria-hidden />
-
-      <div className="pointer-events-none absolute bottom-4 right-6 z-20 flex items-center gap-1.5 text-xs text-muted">
-        Scroll to explore <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
-      </div>
 
       {/* Content (opaque, scrolls over the fixed canvas) */}
       <div className="relative z-10 bg-bg">
@@ -194,7 +232,7 @@ export default function Landing() {
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.key} data-reveal className="group rounded-2xl border border-line bg-surface p-6 transition-all hover:-translate-y-1 hover:border-accent/40">
+              <div key={f.key} data-reveal className="card card-hover group p-6">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
                   <f.icon className="h-5 w-5" />
                 </div>
@@ -209,7 +247,7 @@ export default function Landing() {
           <h2 className="text-3xl font-semibold tracking-tight">How it works</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {STEPS.map((s) => (
-              <div key={s.n} className="rounded-2xl border border-line bg-surface p-6">
+              <div key={s.n} className="card card-hover p-6">
                 <div className="text-gradient text-4xl font-semibold">{s.n}</div>
                 <h3 className="mt-3 font-semibold">{s.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{s.desc}</p>
@@ -230,7 +268,7 @@ export default function Landing() {
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {RULES.map((r, i) => (
                 <div key={i} className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" /> {r}
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" /> {r}
                 </div>
               ))}
             </div>
@@ -242,7 +280,7 @@ export default function Landing() {
           <p className="mt-3 max-w-xl text-muted">Role-based access gives each team member exactly the tools they need, and nothing they do not.</p>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {ROLES.map((r) => (
-              <div key={r.title} className="rounded-2xl border border-line bg-surface p-6">
+              <div key={r.title} className="card card-hover p-6">
                 <div className="h-1 w-10 rounded-full bg-gradient-to-r from-accent to-accent-2" />
                 <h3 className="mt-4 font-semibold">{r.title}</h3>
                 <p className="mt-2 text-sm text-muted">{r.desc}</p>
