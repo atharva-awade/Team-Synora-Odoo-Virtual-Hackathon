@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import DeckGL from "@deck.gl/react";
 import { MapView, LightingEffect, AmbientLight, DirectionalLight } from "@deck.gl/core";
 import { TileLayer } from "@deck.gl/geo-layers";
@@ -58,13 +58,13 @@ export function LiveMap() {
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
   const [time, setTime] = useState(0);
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
   const [routes, setRoutes] = useState<Record<string, number[][]>>({});
   const [fullscreen, setFullscreen] = useState(false);
   const speedRef = useRef(1);
   const clockRef = useRef(0);
 
-  const { data } = useQuery({ queryKey: ["trips"], queryFn: () => jsonFetch("/api/trips"), refetchInterval: 8000 });
+  const { data } = useQuery({ queryKey: ["trips"], queryFn: () => jsonFetch("/api/trips"), refetchInterval: 8000, placeholderData: keepPreviousData });
   useEffect(() => { speedRef.current = playing ? speed : 0; }, [playing, speed]);
   useEffect(() => {
     if (!fullscreen) return;
@@ -92,7 +92,7 @@ export function LiveMap() {
       const now = performance.now();
       clockRef.current += ((now - last) / 1000) * speedRef.current;
       last = now;
-      if (now - lastSet > 33) { setTime(clockRef.current); lastSet = now; }
+      if (now - lastSet > 40) { setTime(clockRef.current); lastSet = now; }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -133,46 +133,60 @@ export function LiveMap() {
 
   const pathFor = (tr: any) => (routes[tr.id] && routes[tr.id].length > 1 ? routes[tr.id] : [[tr.srcLng, tr.srcLat], [tr.destLng, tr.destLat]]);
 
-  const vehicles = trips.map((tr: any, i: number) => {
-    const p = ((time / 26) + i * 0.17) % 1;
-    const { position, heading } = alongPath(pathFor(tr), p);
-    return { position, heading, isPickup: tr.vehicle?.type === "Pickup", trip: tr };
-  });
-  const routePaths = trips.map((tr: any) => ({ path: pathFor(tr), trip: tr, sel: selected?.id === tr.id }));
-  const pins = trips.flatMap((tr: any) => [{ position: [tr.srcLng, tr.srcLat], kind: "src" }, { position: [tr.destLng, tr.destLat], kind: "dst" }]);
-  const activeCount = (data?.trips ?? []).filter((t: any) => t.status === "DISPATCHED").length;
+  // The moving trucks are the only thing recomputed every animation tick.
+  const vehicles = useMemo(
+    () => trips.map((tr: any, i: number) => {
+      const p = ((time / 26) + i * 0.17) % 1;
+      const { position, heading } = alongPath(pathFor(tr), p);
+      return { position, heading, isPickup: tr.vehicle?.type === "Pickup", trip: tr };
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [trips, routes, time],
+  );
+
+  const activeCount = useMemo(() => (data?.trips ?? []).filter((t: any) => t.status === "DISPATCHED").length, [data]);
 
   const tileUrl = dark
     ? "https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png"
     : "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
 
-  const layers = [
-    new TileLayer({
-      id: `basemap-${dark ? "d" : "l"}`,
-      data: tileUrl,
-      minZoom: 0,
-      maxZoom: 19,
-      tileSize: 256,
-      renderSubLayers: (props: any) => {
-        const { boundingBox } = props.tile;
-        return new BitmapLayer(props, {
-          data: undefined,
-          image: props.data,
-          bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
-        });
-      },
-    }),
-    new PathLayer({
-      id: "routes", data: routePaths, getPath: (d: any) => d.path,
-      getColor: (d: any) => (d.sel ? [245, 166, 35, 255] : [232, 121, 58, 170]),
-      getWidth: (d: any) => (d.sel ? 5 : 3), widthUnits: "pixels", capRounded: true, jointRounded: true, pickable: true,
-      updateTriggers: { getColor: [selected?.id] },
-    }),
-    new ScatterplotLayer({
-      id: "pins", data: pins, getPosition: (d: any) => d.position,
-      getFillColor: (d: any) => (d.kind === "src" ? [52, 211, 153, 255] : [245, 166, 35, 255]),
-      getRadius: 6, radiusUnits: "pixels", stroked: true, getLineColor: [255, 255, 255, 150], lineWidthUnits: "pixels", getLineWidth: 1.5,
-    }),
+  // Basemap, routes and pins only rebuild when their data or the theme changes,
+  // so the 25fps truck animation does not thrash the whole layer stack.
+  const staticLayers = useMemo(() => {
+    const routePaths = trips.map((tr: any) => ({ path: pathFor(tr), trip: tr, sel: selected?.id === tr.id }));
+    const pins = trips.flatMap((tr: any) => [{ position: [tr.srcLng, tr.srcLat], kind: "src" }, { position: [tr.destLng, tr.destLat], kind: "dst" }]);
+    return [
+      new TileLayer({
+        id: `basemap-${dark ? "d" : "l"}`,
+        data: tileUrl,
+        minZoom: 0,
+        maxZoom: 19,
+        tileSize: 256,
+        renderSubLayers: (props: any) => {
+          const { boundingBox } = props.tile;
+          return new BitmapLayer(props, {
+            data: undefined,
+            image: props.data,
+            bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
+          });
+        },
+      }),
+      new PathLayer({
+        id: "routes", data: routePaths, getPath: (d: any) => d.path,
+        getColor: (d: any) => (d.sel ? [245, 166, 35, 255] : [232, 121, 58, 170]),
+        getWidth: (d: any) => (d.sel ? 5 : 3), widthUnits: "pixels", capRounded: true, jointRounded: true, pickable: true,
+        updateTriggers: { getColor: [selected?.id] },
+      }),
+      new ScatterplotLayer({
+        id: "pins", data: pins, getPosition: (d: any) => d.position,
+        getFillColor: (d: any) => (d.kind === "src" ? [52, 211, 153, 255] : [245, 166, 35, 255]),
+        getRadius: 6, radiusUnits: "pixels", stroked: true, getLineColor: [255, 255, 255, 150], lineWidthUnits: "pixels", getLineWidth: 1.5,
+      }),
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trips, routes, dark, selected?.id]);
+
+  const truckLayers = [
     new ScenegraphLayer({
       id: "trucks", data: vehicles.filter((v: any) => !v.isPickup), scenegraph: "/models/truck.glb",
       getPosition: (d: any) => d.position, getOrientation: (d: any) => [0, -d.heading + ORIENT_YAW, 90],
@@ -184,6 +198,8 @@ export function LiveMap() {
       sizeScale: 1.5, sizeUnits: "meters", sizeMinPixels: 6, sizeMaxPixels: 34, _lighting: "pbr", loaders: [GLTFLoader], pickable: true,
     }),
   ];
+
+  const layers = [...staticLayers, ...truckLayers];
 
   return (
     <div
