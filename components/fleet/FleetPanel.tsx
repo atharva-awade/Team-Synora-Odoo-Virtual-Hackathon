@@ -36,7 +36,7 @@ export function FleetPanel() {
       </div>
       <div className="pointer-events-none absolute bottom-4 left-5 flex flex-wrap gap-4 text-xs">
         <Count dot="#34d399" label="Available" n={c("AVAILABLE")} />
-        <Count dot="#38bdf8" label="On Trip" n={c("ON_TRIP")} />
+        <Count dot="#875A7B" label="On Trip" n={c("ON_TRIP")} />
         <Count dot="#f5a623" label="In Shop" n={c("IN_SHOP")} />
         <Count dot="#fb7185" label="Retired" n={c("RETIRED")} />
       </div>

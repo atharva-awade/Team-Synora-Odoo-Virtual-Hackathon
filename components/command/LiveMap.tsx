@@ -173,13 +173,13 @@ export function LiveMap() {
       }),
       new PathLayer({
         id: "routes", data: routePaths, getPath: (d: any) => d.path,
-        getColor: (d: any) => (d.sel ? [245, 166, 35, 255] : [232, 121, 58, 170]),
+        getColor: (d: any) => (d.sel ? [160, 108, 146, 255] : [135, 90, 123, 170]),
         getWidth: (d: any) => (d.sel ? 5 : 3), widthUnits: "pixels", capRounded: true, jointRounded: true, pickable: true,
         updateTriggers: { getColor: [selected?.id] },
       }),
       new ScatterplotLayer({
         id: "pins", data: pins, getPosition: (d: any) => d.position,
-        getFillColor: (d: any) => (d.kind === "src" ? [52, 211, 153, 255] : [245, 166, 35, 255]),
+        getFillColor: (d: any) => (d.kind === "src" ? [52, 211, 153, 255] : [135, 90, 123, 255]),
         getRadius: 6, radiusUnits: "pixels", stroked: true, getLineColor: [255, 255, 255, 150], lineWidthUnits: "pixels", getLineWidth: 1.5,
       }),
     ];
@@ -222,7 +222,7 @@ export function LiveMap() {
         <button onClick={() => setPlaying((p) => !p)} className="ml-2 rounded-md p-1 text-white/70 hover:bg-white/10 hover:text-white">
           {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
         </button>
-        <input type="range" min={0.5} max={5} step={0.5} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="w-20 accent-[#e8793a]" />
+        <input type="range" min={0.5} max={5} step={0.5} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="w-20 accent-[#875A7B]" />
         <span className="text-[11px] text-white/60">{speed}x</span>
       </div>
       <div className="absolute right-4 top-4 z-10 rounded-xl border border-white/10 bg-black/50 px-3 py-2 text-right backdrop-blur">

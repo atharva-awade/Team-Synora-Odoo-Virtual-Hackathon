@@ -32,7 +32,7 @@ export const MAINTENANCE_STATUSES = ["OPEN", "CLOSED"] as const;
 // Tailwind classes for status pills. Light theme uses darker text, dark theme
 // (via the `dark:` variant) uses lighter text, so pills read in both modes.
 const EMERALD = "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300";
-const SKY = "bg-sky-500/10 text-sky-700 border-sky-500/30 dark:bg-sky-500/15 dark:text-sky-300";
+const PLUM = "bg-[#875A7B]/10 text-[#714B67] border-[#875A7B]/30 dark:bg-[#875A7B]/20 dark:text-[#c9a9c1] dark:border-[#875A7B]/40";
 const AMBER = "bg-amber-500/10 text-amber-700 border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300";
 const ROSE = "bg-rose-500/10 text-rose-700 border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300";
 const ZINC = "bg-zinc-500/10 text-zinc-600 border-zinc-400/40 dark:bg-zinc-500/15 dark:text-zinc-300";
@@ -41,8 +41,8 @@ export const STATUS_STYLE: Record<string, string> = {
   AVAILABLE: EMERALD,
   COMPLETED: EMERALD,
   CLOSED: EMERALD,
-  ON_TRIP: SKY,
-  DISPATCHED: SKY,
+  ON_TRIP: PLUM,
+  DISPATCHED: PLUM,
   IN_SHOP: AMBER,
   SUSPENDED: AMBER,
   OPEN: AMBER,

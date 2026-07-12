@@ -59,9 +59,9 @@ export function FuelManager({ canEdit }: { canEdit: boolean }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <CostTile label="Fuel Cost" value={totals.fuelCost} accent="#e8793a" />
+        <CostTile label="Fuel Cost" value={totals.fuelCost} accent="#875A7B" />
         <CostTile label="Maintenance Cost" value={totals.maintCost} accent="#f5a623" />
-        <CostTile label="Other Expenses" value={totals.expenseCost} accent="#38bdf8" />
+        <CostTile label="Other Expenses" value={totals.expenseCost} accent="#8f8f8f" />
         <CostTile label="Total Operational Cost" value={totals.total} accent="#34d399" bold />
       </div>
 

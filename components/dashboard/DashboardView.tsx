@@ -24,7 +24,7 @@ export function DashboardView({ userName, initial }: { userName: string; initial
 
   const statusBars = [
     { label: "Available", value: s.available, color: "#34d399" },
-    { label: "On Trip", value: s.onTrip, color: "#38bdf8" },
+    { label: "On Trip", value: s.onTrip, color: "#875A7B" },
     { label: "In Shop", value: s.inShop, color: "#f5a623" },
     { label: "Retired", value: s.retired, color: "#fb7185" },
   ];
@@ -43,13 +43,13 @@ export function DashboardView({ userName, initial }: { userName: string; initial
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-7">
-        <KpiCard label="Active Vehicles" value={s.activeVehicles} accent="#e8793a" icon={<Truck className="h-4 w-4" />} />
+        <KpiCard label="Active Vehicles" value={s.activeVehicles} accent="#875A7B" icon={<Truck className="h-4 w-4" />} />
         <KpiCard label="Available" value={s.available} accent="#34d399" icon={<CheckCircle2 className="h-4 w-4" />} />
         <KpiCard label="In Maintenance" value={s.inShop} accent="#f5a623" icon={<Wrench className="h-4 w-4" />} />
-        <KpiCard label="Active Trips" value={s.activeTrips} accent="#38bdf8" icon={<Route className="h-4 w-4" />} />
-        <KpiCard label="Pending Trips" value={s.pendingTrips} accent="#a78bfa" icon={<Clock className="h-4 w-4" />} />
-        <KpiCard label="Drivers On Duty" value={s.driversOnDuty} accent="#f472b6" icon={<Users className="h-4 w-4" />} />
-        <KpiCard label="Fleet Utilization" value={s.utilization} suffix="%" accent="#e8793a" icon={<Gauge className="h-4 w-4" />} />
+        <KpiCard label="Active Trips" value={s.activeTrips} accent="#875A7B" icon={<Route className="h-4 w-4" />} />
+        <KpiCard label="Pending Trips" value={s.pendingTrips} accent="#a06c92" icon={<Clock className="h-4 w-4" />} />
+        <KpiCard label="Drivers On Duty" value={s.driversOnDuty} accent="#8f8f8f" icon={<Users className="h-4 w-4" />} />
+        <KpiCard label="Fleet Utilization" value={s.utilization} suffix="%" accent="#875A7B" icon={<Gauge className="h-4 w-4" />} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

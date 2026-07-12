@@ -52,7 +52,7 @@ export function AnalyticsView({ data }: { data: Data }) {
       head: [["Reg No", "Name", "Status", "Revenue", "Op Cost", "ROI %", "Eff km/L"]],
       body: perVehicle.map((r) => [r.regNo, r.name, r.status, r.revenue, r.opCost, r.roi, r.efficiency]),
       styles: { fontSize: 8 },
-      headStyles: { fillColor: [232, 121, 58] },
+      headStyles: { fillColor: [135, 90, 123] },
     });
     doc.save("transitops-fleet-report.pdf");
   }
@@ -65,10 +65,10 @@ export function AnalyticsView({ data }: { data: Data }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Metric icon={<Gauge className="h-4 w-4" />} label="Fuel Efficiency" value={`${totals.fleetEfficiency} km/L`} accent="#e8793a" />
+        <Metric icon={<Gauge className="h-4 w-4" />} label="Fuel Efficiency" value={`${totals.fleetEfficiency} km/L`} accent="#875A7B" />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Fleet Utilization" value={`${totals.utilization}%`} accent="#34d399" />
-        <Metric icon={<Wallet className="h-4 w-4" />} label="Operational Cost" value={formatINR(totals.totalOpCost)} accent="#38bdf8" />
-        <Metric icon={<TrendingUp className="h-4 w-4" />} label="Avg Vehicle ROI" value={`${totals.avgRoi}%`} accent="#a78bfa" />
+        <Metric icon={<Wallet className="h-4 w-4" />} label="Operational Cost" value={formatINR(totals.totalOpCost)} accent="#8f8f8f" />
+        <Metric icon={<TrendingUp className="h-4 w-4" />} label="Avg Vehicle ROI" value={`${totals.avgRoi}%`} accent="#a06c92" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -81,7 +81,7 @@ export function AnalyticsView({ data }: { data: Data }) {
                 <XAxis dataKey="label" stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
                 <Tooltip
-                  cursor={{ fill: "rgba(232,121,58,0.10)" }}
+                  cursor={{ fill: "rgba(135,90,123,0.10)" }}
                   contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 12, fontSize: 12, color: "var(--ink)" }}
                   labelStyle={{ color: "var(--muted)" }}
                   itemStyle={{ color: "var(--ink)" }}

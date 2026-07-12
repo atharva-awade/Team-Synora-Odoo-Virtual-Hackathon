@@ -7,7 +7,7 @@ import * as THREE from "three";
 
 const STATUS_COLOR: Record<string, string> = {
   AVAILABLE: "#34d399",
-  ON_TRIP: "#38bdf8",
+  ON_TRIP: "#875A7B",
   IN_SHOP: "#f5a623",
   RETIRED: "#fb7185",
 };
@@ -83,7 +83,7 @@ export default function FleetShowcase({ vehicles }: { vehicles: V[] }) {
     <Canvas shadows dpr={[1, 1.8]} camera={{ position: [7, 5.5, 8], fov: 42 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
       <ambientLight intensity={0.7} />
       <directionalLight position={[8, 13, 7]} intensity={1.5} castShadow shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[-6, 5, -6]} intensity={0.4} color="#e8793a" />
+      <directionalLight position={[-6, 5, -6]} intensity={0.4} color="#875A7B" />
       <Suspense fallback={null}>
         {vehicles.length > 0 && <Yard vehicles={vehicles} />}
       </Suspense>
