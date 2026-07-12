@@ -29,46 +29,38 @@ const CHAPTERS = [
 
 const FEATURES = CHAPTERS.slice(1);
 
-function ChapterOverlay() {
+function ChapterCard() {
   const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
   const c = CHAPTERS[idx];
   const Icon = c.icon;
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center">
-      <div key={c.key} className="animate-fade-in max-w-xl px-6 sm:px-10 lg:pl-16">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1 text-xs text-muted backdrop-blur">
-          <Icon className="h-3.5 w-3.5 text-accent" /> {c.eyebrow}
+    <div className="pointer-events-none absolute inset-x-0 bottom-8 z-20 flex flex-col items-center px-4">
+      <div key={c.key} className="panel animate-fade-in w-full max-w-xl rounded-2xl p-6 text-center">
+        <div className="mb-2 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-accent">
+          <Icon className="h-4 w-4" /> {c.eyebrow}
         </div>
         {c.intro ? (
           <>
-            <h1 className="text-4xl font-semibold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
               The living <span className="text-gradient">3D command center</span> for your fleet.
             </h1>
-            <p className="mt-5 max-w-md text-base text-muted sm:text-lg">{c.desc}</p>
-            <div className="pointer-events-auto mt-7 flex flex-wrap gap-3">
-              <Link href="/login" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
-                <Rocket className="h-4 w-4" /> Launch Command Center
-              </Link>
-            </div>
+            <p className="mx-auto mt-2.5 max-w-md text-sm text-muted">{c.desc}</p>
+            <Link href="/login" className="pointer-events-auto mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-2.5 text-sm font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
+              <Rocket className="h-4 w-4" /> Launch Command Center
+            </Link>
           </>
         ) : (
           <>
-            <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">{c.title}</h2>
-            <p className="mt-4 max-w-md text-base text-muted sm:text-lg">{c.desc}</p>
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{c.title}</h2>
+            <p className="mx-auto mt-2.5 max-w-md text-sm text-muted">{c.desc}</p>
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-function ProgressRail() {
-  const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
-  return (
-    <div className="pointer-events-none absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-2">
-      {CHAPTERS.map((c, i) => (
-        <span key={c.key} className={`h-1.5 rounded-full transition-all duration-300 ${i === idx ? "w-8 bg-accent" : "w-1.5 bg-muted/40"}`} />
-      ))}
+      <div className="mt-4 flex gap-2">
+        {CHAPTERS.map((ch, i) => (
+          <span key={ch.key} className={`h-1.5 rounded-full transition-all duration-300 ${i === idx ? "w-8 bg-accent" : "w-1.5 bg-muted/40"}`} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -116,23 +108,20 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Pinned scroll-driven 3D story */}
-      <section ref={stageRef} className="relative" style={{ height: "680vh" }}>
+      {/* Pinned scroll-driven 3D story: truck centered, camera orbits, info card at bottom */}
+      <section ref={stageRef} className="relative" style={{ height: "620vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
-          <div className="absolute inset-0 grid-bg opacity-60" />
           <div className="absolute inset-0">
             <StoryCanvas />
           </div>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-bg via-bg/50 to-transparent" />
-          <ChapterOverlay />
-          <ProgressRail />
-          <div className="pointer-events-none absolute bottom-7 right-8 flex items-center gap-1.5 text-xs text-muted">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-bg to-transparent" />
+          <ChapterCard />
+          <div className="pointer-events-none absolute bottom-3 right-6 flex items-center gap-1.5 text-xs text-muted">
             Scroll to explore <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
           </div>
         </div>
       </section>
 
-      {/* Stats */}
       <section className="border-y border-line bg-surface/40" data-reveal>
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-12 md:grid-cols-4">
           <Stat value={53} label="Vehicles managed" />
@@ -142,7 +131,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features */}
       <section id="features" className="mx-auto max-w-6xl px-5 py-20">
         <div data-reveal className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight">One platform, the entire transport lifecycle.</h2>
@@ -161,7 +149,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Closing CTA */}
       <section className="mx-auto max-w-6xl px-5 pb-24" data-reveal>
         <div className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-surface to-surface-2 p-10 text-center sm:p-16">
           <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
