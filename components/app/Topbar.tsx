@@ -37,7 +37,7 @@ export function Topbar({ user }: { user: { name: string; email: string; role: Ro
           <div className="text-[11px] text-muted">{user.email}</div>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-line bg-surface-2 py-1 pl-1 pr-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-xs font-bold text-black">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-xs font-bold text-white">
             {initials}
           </div>
           <span className="text-xs font-medium text-ink">{ROLE_LABELS[user.role]}</span>
