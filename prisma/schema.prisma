@@ -1,15 +1,16 @@
-// TransitOps data model (SQLite for zero-config local dev).
-// SQLite has no native enums or scalar arrays, so status/role/type fields are
-// plain strings validated in the app layer (see lib/constants.ts), and small
-// lists (route waypoints, incidents) are stored as JSON strings.
+// TransitOps data model (Postgres via Supabase).
+// Status/role/type fields are plain strings validated in the app layer
+// (see lib/constants.ts), and small lists (route waypoints, incidents) are
+// stored as JSON strings, so the schema stays portable.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
