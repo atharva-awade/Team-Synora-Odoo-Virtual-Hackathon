@@ -8,15 +8,15 @@ import { useStory } from "@/lib/story-store";
 
 // The camera always looks at the truck center, so the truck stays dead-center
 // on screen at every scroll position. Only the camera POSITION orbits.
-const TARGET: [number, number, number] = [0, 1.1, 0];
+const TARGET: [number, number, number] = [0, 1.4, 0];
 const KEYS: [number, number, number][] = [
-  [0, 3.0, 9.0], // 0 reveal (pulls in)
-  [4.8, 2.0, 3.2], // 1 dispatch (front 3/4)
-  [5.7, 1.9, -1.4], // 2 tracking (right side)
-  [-4.6, 2.2, -3.2], // 3 maintenance (rear-left)
-  [2.7, 1.2, 4.4], // 4 fuel (front low)
-  [0.2, 5.8, 3.2], // 5 analytics (top down, still centered)
-  [3.7, 2.3, 2.6], // 6 compliance (cabin)
+  [0, 3.0, 8.0], // 0 reveal (pulls in)
+  [4.2, 2.0, 3.0], // 1 dispatch (front 3/4)
+  [5.0, 1.8, -1.2], // 2 tracking (right side)
+  [-4.2, 2.0, -3.0], // 3 maintenance (rear-left)
+  [2.6, 1.2, 3.8], // 4 fuel (front low)
+  [0.2, 5.5, 3.0], // 5 analytics (top down, still centered)
+  [3.4, 2.2, 2.4], // 6 compliance (cabin)
 ];
 
 function lerp3(a: number[], b: number[], t: number): [number, number, number] {
@@ -36,7 +36,7 @@ function Truck() {
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 5 / maxDim;
+    const scale = 5.6 / maxDim;
     scene.scale.setScalar(scale);
     scene.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
     scene.traverse((o: any) => {
@@ -67,7 +67,7 @@ export default function StoryCanvas() {
     <Canvas
       shadows
       dpr={[1, 1.8]}
-      camera={{ position: [0, 3, 9], fov: 38 }}
+      camera={{ position: [0, 3, 8], fov: 40 }}
       gl={{ alpha: true, antialias: true }}
       style={{ background: "transparent" }}
     >
