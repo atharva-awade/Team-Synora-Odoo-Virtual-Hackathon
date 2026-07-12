@@ -2,6 +2,7 @@ import { Truck, CheckCircle2, Wrench, Route, Clock, Users, Gauge, ShieldAlert } 
 import { getSession } from "@/lib/auth";
 import { getDashboardStats } from "@/lib/services/stats";
 import { getCompliance } from "@/lib/services/compliance";
+import { LiveRefresh } from "@/components/app/LiveRefresh";
 import { KpiCard } from "@/components/ui/Kpi";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { Card } from "@/components/ui/primitives";
@@ -24,6 +25,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <LiveRefresh />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Welcome back, {user?.name.split(" ")[0]}</h1>
