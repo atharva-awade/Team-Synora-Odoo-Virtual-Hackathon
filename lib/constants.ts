@@ -84,6 +84,12 @@ export const CITY_NAMES = Object.keys(CITIES);
 export const DIESEL_CO2_PER_L = 2.68;
 
 // Role based access: which primary sections each role can act in.
+export type Access = "full" | "view" | "none";
+
+export function sectionAccess(role: Role, section: string): Access {
+  return RBAC[role].find((r) => r.section === section)?.access ?? "view";
+}
+
 export const RBAC: Record<Role, { section: string; access: "full" | "view" | "none" }[]> = {
   FLEET_MANAGER: [
     { section: "fleet", access: "full" },
