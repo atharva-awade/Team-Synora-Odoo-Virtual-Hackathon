@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TransitOps — Smart Transport Operations Platform
+
+> Team **Synora** · Odoo Hackathon 2026
+
+TransitOps is a centralized platform for managing the full lifecycle of a transport/logistics operation — vehicles, drivers, dispatching, maintenance, fuel & expenses, and analytics — replacing spreadsheets and manual logbooks with a real-time operational command center.
+
+## Highlights
+
+- **Role-based command center** for Fleet Managers, Dispatchers, Safety Officers and Financial Analysts.
+- **Trip dispatch state machine** with strict business-rule enforcement (capacity checks, license validity, no double-booking, automatic status transitions).
+- **Live 3D fleet map & interactive globe** — vehicles move along their routes in real time.
+- **Predictive maintenance & compliance radar** — service-due forecasting and licence-expiry alerts.
+- **Analytics** — fleet utilization, fuel efficiency, operational cost and vehicle ROI, with CSV export.
+
+## Tech Stack
+
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS v4** + shadcn/ui
+- **Prisma** + **PostgreSQL**
+- **deck.gl** + **MapLibre** (live map) · **react-globe.gl** (command globe) · **React Three Fiber** (3D showcase)
+- **Socket.IO** (real-time updates) · **Recharts** (analytics)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env          # set DATABASE_URL and JWT_SECRET
+npx prisma migrate dev
+npm run seed                  # load the demo fleet
+npm run dev                   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Core Business Rules
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Registration numbers are unique; retired / in-shop vehicles are hidden from dispatch.
+- Drivers with expired licences or suspended status cannot be assigned.
+- A vehicle or driver already on a trip cannot be double-assigned.
+- Cargo weight must not exceed the vehicle's maximum load capacity.
+- Dispatch → both vehicle and driver become **On Trip**; completion/cancellation restores **Available**.
+- Opening a maintenance record moves a vehicle to **In Shop**; closing restores **Available**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Team Synora
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built for the Odoo Virtual Hackathon 2026.
