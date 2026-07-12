@@ -12,9 +12,9 @@
   --line: #e2e5ea;
   --ink: #16171c;
   --muted: #5f6472;
-  --accent: #e8793a;
-  --accent-2: #ef9a1e;
-  --blue: #2f6bff;
+  --accent: #875A7B;
+  --accent-2: #714B67;
+  --blue: #6d5b9e;
   --grid-dot: rgba(15, 20, 35, 0.05);
   --shadow: 0 1px 2px rgba(16, 23, 38, 0.06), 0 8px 24px -12px rgba(16, 23, 38, 0.12);
 }
@@ -27,9 +27,9 @@
   --line: #232329;
   --ink: #ededf0;
   --muted: #8b8b95;
-  --accent: #e8793a;
-  --accent-2: #f5a623;
-  --blue: #4f8fff;
+  --accent: #a06c92;
+  --accent-2: #875A7B;
+  --blue: #8b78c4;
   --grid-dot: rgba(255, 255, 255, 0.045);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px -12px rgba(0, 0, 0, 0.6);
 }
@@ -88,21 +88,48 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Liquid glass surfaces */
+/* Liquid glass surfaces - real frosted glass that reads over any backdrop */
 .glass {
-  background: color-mix(in srgb, var(--surface) 66%, transparent);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  box-shadow: var(--shadow), inset 0 1px 0 color-mix(in srgb, #ffffff 14%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--surface) 55%, transparent),
+    color-mix(in srgb, var(--surface) 26%, transparent)
+  );
+  backdrop-filter: blur(22px) saturate(1.7) brightness(1.04);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7) brightness(1.04);
+  border: 1px solid color-mix(in srgb, #ffffff 42%, transparent);
+  box-shadow:
+    0 8px 32px -10px rgba(20, 16, 30, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 55%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--ink) 6%, transparent);
 }
 .glass-strong {
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--surface) 78%, transparent),
+    color-mix(in srgb, var(--surface) 52%, transparent)
+  );
+  backdrop-filter: blur(30px) saturate(1.8) brightness(1.04);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8) brightness(1.04);
+  border: 1px solid color-mix(in srgb, #ffffff 48%, transparent);
   border-radius: 20px;
-  box-shadow: var(--shadow), inset 0 1px 0 color-mix(in srgb, #ffffff 16%, transparent);
+  box-shadow:
+    0 16px 48px -14px rgba(20, 16, 30, 0.3),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 60%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--ink) 7%, transparent);
+}
+/* On dark, drop the white-tinted edges so the glass rim is not harsh */
+:root.dark .glass {
+  border-color: color-mix(in srgb, #ffffff 12%, transparent);
+  box-shadow:
+    0 10px 36px -12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 12%, transparent);
+}
+:root.dark .glass-strong {
+  border-color: color-mix(in srgb, #ffffff 14%, transparent);
+  box-shadow:
+    0 18px 52px -16px rgba(0, 0, 0, 0.66),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 14%, transparent);
 }
 .card-hover {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
@@ -175,4 +202,30 @@ body {
 }
 .animate-marquee {
   animation: marquee 24s linear infinite;
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: floatY 6s ease-in-out infinite;
+}
+
+@keyframes auroraDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4%, -3%) scale(1.08); }
+  66% { transform: translate(-3%, 4%) scale(0.96); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.animate-aurora {
+  animation: auroraDrift 22s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-aurora,
+  .animate-marquee {
+    animation: none;
+  }
 }
