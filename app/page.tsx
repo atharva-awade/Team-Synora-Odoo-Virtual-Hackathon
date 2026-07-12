@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, ChevronDown } from "lucide-react";
+import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, ChevronDown, CheckCircle2 } from "lucide-react";
 import { Brand } from "@/components/app/Brand";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { CountUp } from "@/components/ui/Kpi";
@@ -28,6 +28,34 @@ const CHAPTERS = [
 ];
 
 const FEATURES = CHAPTERS.slice(1);
+
+const STEPS = [
+  { n: "01", title: "Register your fleet", desc: "Add vehicles and drivers with capacity, licences and safety scores in one master registry." },
+  { n: "02", title: "Dispatch intelligently", desc: "Smart Dispatch recommends the optimal vehicle and driver; every business rule is enforced server-side." },
+  { n: "03", title: "Track and optimize", desc: "Watch trips live on the map, auto-log fuel and cost, and read ROI and utilization at a glance." },
+];
+
+const RULES = [
+  "Unique registration numbers",
+  "Retired / In-Shop hidden from dispatch",
+  "Expired-licence drivers blocked",
+  "Suspended drivers blocked",
+  "No double-booking a vehicle or driver",
+  "Cargo never exceeds capacity",
+  "Dispatch sets vehicle and driver On Trip",
+  "Completion restores both to Available",
+  "Cancellation restores both",
+  "Maintenance moves a vehicle In Shop",
+];
+
+const ROLES = [
+  { title: "Fleet Manager", desc: "Oversees vehicles, maintenance and lifecycle." },
+  { title: "Dispatcher", desc: "Creates trips and assigns vehicles and drivers." },
+  { title: "Safety Officer", desc: "Tracks licences, compliance and safety scores." },
+  { title: "Financial Analyst", desc: "Owns fuel, cost and profitability analytics." },
+];
+
+const MARQUEE = ["Dispatch", "Track", "Maintain", "Optimize", "Comply"];
 
 function ChapterCard() {
   const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
@@ -144,6 +172,21 @@ export default function Landing() {
           </div>
         </section>
 
+        <section className="overflow-hidden border-b border-line bg-surface/30 py-5">
+          <div className="flex w-max animate-marquee">
+            {[0, 1].map((k) => (
+              <div key={k} className="flex items-center">
+                {MARQUEE.map((w) => (
+                  <span key={w + k} className="flex items-center text-xl font-semibold uppercase tracking-[0.25em] text-muted/50">
+                    <span className="px-6">{w}</span>
+                    <span className="text-accent">/</span>
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section id="features" className="mx-auto max-w-6xl px-5 py-20">
           <div data-reveal className="max-w-xl">
             <h2 className="text-3xl font-semibold tracking-tight">One platform, the entire transport lifecycle.</h2>
@@ -162,7 +205,62 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 pb-24" data-reveal>
+        <section className="mx-auto max-w-6xl px-5 py-20" data-reveal>
+          <h2 className="text-3xl font-semibold tracking-tight">How it works</h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {STEPS.map((s) => (
+              <div key={s.n} className="rounded-2xl border border-line bg-surface p-6">
+                <div className="text-gradient text-4xl font-semibold">{s.n}</div>
+                <h3 className="mt-3 font-semibold">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-y border-line bg-surface/40" data-reveal>
+          <div className="mx-auto max-w-6xl px-5 py-20">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs text-accent">
+                <ShieldCheck className="h-3.5 w-3.5" /> Enforced server-side
+              </div>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight">Ten business rules, zero exceptions.</h2>
+              <p className="mt-3 text-muted">Every dispatch decision passes a strict state machine, so the fleet can never enter an invalid state.</p>
+            </div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {RULES.map((r, i) => (
+                <div key={i} className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" /> {r}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 py-20" data-reveal>
+          <h2 className="text-3xl font-semibold tracking-tight">Built for every role</h2>
+          <p className="mt-3 max-w-xl text-muted">Role-based access gives each team member exactly the tools they need, and nothing they do not.</p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {ROLES.map((r) => (
+              <div key={r.title} className="rounded-2xl border border-line bg-surface p-6">
+                <div className="h-1 w-10 rounded-full bg-gradient-to-r from-accent to-accent-2" />
+                <h3 className="mt-4 font-semibold">{r.title}</h3>
+                <p className="mt-2 text-sm text-muted">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-y border-line bg-gradient-to-br from-surface to-surface-2" data-reveal>
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-14 md:grid-cols-4">
+            <Stat value={128} label="Trips dispatched" />
+            <Stat value={14200} label="Fleet km logged" />
+            <Stat value={38} suffix="t" label="CO2 tracked" />
+            <Stat value={96} suffix="%" label="On-time rate" />
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 py-24" data-reveal>
           <div className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-surface to-surface-2 p-10 text-center sm:p-16">
             <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
             <h2 className="relative text-3xl font-semibold tracking-tight sm:text-4xl">Ready to take command?</h2>
