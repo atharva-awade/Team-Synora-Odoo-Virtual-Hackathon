@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { ScenegraphLayer } from "@deck.gl/mesh-layers";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
@@ -12,7 +11,23 @@ import { Play, Pause, X, Truck as TruckIcon } from "lucide-react";
 import { jsonFetch } from "@/lib/client";
 import { formatINR } from "@/lib/utils";
 
-const CARTO_DARK = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+// Inline raster style (CARTO dark tiles). Raster avoids vector glyph/sprite and
+// heavy worker paths, which is far more robust under Turbopack than a vector style URL.
+const RASTER_STYLE: any = {
+  version: 8,
+  sources: {
+    carto: {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [{ id: "carto", type: "raster", source: "carto" }],
+};
 
 function bearing(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
   const rad = Math.PI / 180;
@@ -46,13 +61,18 @@ export function LiveMap() {
     if (!containerRef.current) return;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: CARTO_DARK,
+      style: RASTER_STYLE,
       center: [72.6, 22.6],
       zoom: 6.6,
       pitch: 45,
       attributionControl: false,
     });
     mapRef.current = map;
+    map.on("error", (e: any) => console.error("maplibre:", e?.error || e));
+    map.on("load", () => map.resize());
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(containerRef.current);
+    setTimeout(() => map.resize(), 250);
     const overlay = new MapboxOverlay({ interleaved: false, layers: [] });
     map.addControl(overlay as any);
     overlayRef.current = overlay;
@@ -109,7 +129,7 @@ export function LiveMap() {
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); map.remove(); };
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); map.remove(); };
   }, []);
 
   return (
