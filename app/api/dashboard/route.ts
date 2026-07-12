@@ -1,18 +1,13 @@
+import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getDashboardStats } from "@/lib/services/stats";
 import { getCompliance } from "@/lib/services/compliance";
-import { DashboardView } from "@/components/dashboard/DashboardView";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export async function GET() {
   const user = await getSession();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const [stats, compliance] = await Promise.all([getDashboardStats(), getCompliance()]);
-
-  return (
-    <DashboardView
-      userName={user?.name.split(" ")[0] ?? "there"}
-      initial={{ stats, compliance }}
-    />
-  );
+  return NextResponse.json({ stats, compliance });
 }
