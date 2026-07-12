@@ -1,0 +1,145 @@
+// TransitOps data model (SQLite for zero-config local dev).
+// SQLite has no native enums or scalar arrays, so status/role/type fields are
+// plain strings validated in the app layer (see lib/constants.ts), and small
+// lists (route waypoints, incidents) are stored as JSON strings.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("DISPATCHER") // FLEET_MANAGER | DISPATCHER | SAFETY_OFFICER | FINANCIAL_ANALYST
+  createdAt    DateTime @default(now())
+}
+
+model Vehicle {
+  id                String   @id @default(cuid())
+  regNo             String   @unique
+  name              String
+  type              String   // Van | Truck | Mini | Pickup | Trailer
+  maxLoadKg         Int
+  odometer          Int      @default(0)
+  acquisitionCost   Float
+  status            String   @default("AVAILABLE") // AVAILABLE | ON_TRIP | IN_SHOP | RETIRED
+  region            String   @default("Gandhinagar")
+  homeLat           Float?
+  homeLng           Float?
+  lastServiceOdo    Int      @default(0)
+  serviceIntervalKm Int      @default(10000)
+  fuelType          String   @default("Diesel")
+  modelKey          String   @default("truck") // which 3D model to render
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  trips       Trip[]
+  maintenance MaintenanceLog[]
+  fuelLogs    FuelLog[]
+  expenses    Expense[]
+}
+
+model Driver {
+  id            String   @id @default(cuid())
+  name          String
+  licenseNo     String   @unique
+  category      String   // LMV | HMV | Trailer
+  licenseExpiry DateTime
+  contact       String
+  safetyScore   Int      @default(85)
+  status        String   @default("AVAILABLE") // AVAILABLE | ON_TRIP | OFF_DUTY | SUSPENDED
+  region        String   @default("Gandhinagar")
+  incidents     String   @default("[]") // JSON array of incident notes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  trips Trip[]
+}
+
+model Trip {
+  id                String    @id @default(cuid())
+  code              String    @unique // TR001, TR002, ...
+  source            String
+  destination       String
+  vehicleId         String?
+  driverId          String?
+  cargoWeightKg     Int
+  plannedDistanceKm Float
+  revenue           Float     @default(0)
+  status            String    @default("DRAFT") // DRAFT | DISPATCHED | COMPLETED | CANCELLED
+  srcLat            Float?
+  srcLng            Float?
+  destLat           Float?
+  destLng           Float?
+  routeWaypoints    String    @default("[]") // JSON array of [lng,lat] points
+  actualDistanceKm  Float?
+  fuelUsedL         Float?
+  co2Kg             Float?
+  dispatchedAt      DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  vehicle  Vehicle?  @relation(fields: [vehicleId], references: [id])
+  driver   Driver?   @relation(fields: [driverId], references: [id])
+  fuelLogs FuelLog[]
+  expenses Expense[]
+}
+
+model MaintenanceLog {
+  id          String    @id @default(cuid())
+  vehicleId   String
+  type        String
+  description String    @default("")
+  cost        Float     @default(0)
+  priority    String    @default("MEDIUM") // LOW | MEDIUM | HIGH
+  status      String    @default("OPEN")   // OPEN | CLOSED
+  openedAt    DateTime  @default(now())
+  closedAt    DateTime?
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+}
+
+model FuelLog {
+  id         String   @id @default(cuid())
+  vehicleId  String
+  tripId     String?
+  liters     Float
+  cost       Float
+  odometer   Int?
+  date       DateTime @default(now())
+  efficiency Float? // km per litre when derivable
+  anomaly    Boolean  @default(false)
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  trip    Trip?   @relation(fields: [tripId], references: [id])
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  vehicleId String?
+  tripId    String?
+  type      String   // TOLL | MAINTENANCE | OTHER
+  amount    Float
+  note      String   @default("")
+  date      DateTime @default(now())
+
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+  trip    Trip?    @relation(fields: [tripId], references: [id])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  actor     String
+  action    String
+  entity    String
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+}

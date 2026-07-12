@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,7 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# tooling artifacts — do not commit
+# tooling artifacts - do not commit
 .claude/
 CLAUDE.md
 AGENTS.md
@@ -48,3 +49,8 @@ AGENTS.md
 .cursor/
 *.local
 settings.local.json
+
+# local sqlite database
+*.db
+*.db-journal
+prisma/dev.db*
