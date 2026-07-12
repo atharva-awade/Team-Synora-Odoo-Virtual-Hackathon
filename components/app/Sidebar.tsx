@@ -2,40 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Truck,
-  Users,
-  Route,
-  Wrench,
-  Fuel,
-  BarChart3,
-  Settings,
-  Globe2,
-} from "lucide-react";
-import { RBAC, type Role } from "@/lib/constants";
+import { type Role } from "@/lib/constants";
+import { navFor } from "./nav-items";
 import { Brand } from "./Brand";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, section: null },
-  { href: "/fleet", label: "Fleet", icon: Truck, section: "fleet" },
-  { href: "/drivers", label: "Drivers", icon: Users, section: "drivers" },
-  { href: "/trips", label: "Trips", icon: Route, section: "trips" },
-  { href: "/command", label: "Live Map", icon: Globe2, section: null },
-  { href: "/maintenance", label: "Maintenance", icon: Wrench, section: "maintenance" },
-  { href: "/fuel", label: "Fuel & Expenses", icon: Fuel, section: "fuel" },
-  { href: "/analytics", label: "Analytics", icon: BarChart3, section: "analytics" },
-  { href: "/settings", label: "Settings", icon: Settings, section: null },
-] as const;
-
 export function Sidebar({ role }: { role: Role }) {
   const pathname = usePathname();
-  const denied = new Set(RBAC[role].filter((r) => r.access === "none").map((r) => r.section));
-  const items = NAV.filter((n) => !n.section || !denied.has(n.section));
+  const items = navFor(role);
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-line bg-surface/40 p-4 md:flex">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-line bg-surface/50 p-4 backdrop-blur-xl md:flex">
       <div className="px-2 py-2">
         <Brand />
       </div>

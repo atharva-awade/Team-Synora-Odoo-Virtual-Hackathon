@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Search, LogOut } from "lucide-react";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
 import { ThemeToggle } from "./ThemeToggle";
+import { MobileNav } from "./MobileNav";
 
 export function Topbar({ user }: { user: { name: string; email: string; role: Role } }) {
   const router = useRouter();
@@ -22,6 +23,7 @@ export function Topbar({ user }: { user: { name: string; email: string; role: Ro
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-bg/70 px-4 backdrop-blur-md">
+      <MobileNav role={user.role} />
       <div className="relative hidden w-72 sm:block">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
