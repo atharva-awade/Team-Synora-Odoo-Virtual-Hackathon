@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, Gauge, TrendingUp, Wallet, Leaf } from "lucide-react";
+import { Download, Gauge, TrendingUp, Wallet, Leaf, FileText } from "lucide-react";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { Button, Card } from "@/components/ui/primitives";
 import { formatINR, formatNumber } from "@/lib/utils";
@@ -34,9 +36,31 @@ export function AnalyticsView({ data }: { data: Data }) {
     URL.revokeObjectURL(url);
   }
 
+  function exportPdf() {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("TransitOps Fleet Report", 14, 18);
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text(
+      `Utilization ${totals.utilization}%   Fuel efficiency ${totals.fleetEfficiency} km/L   Operational cost ${formatINR(totals.totalOpCost)}   Avg ROI ${totals.avgRoi}%`,
+      14,
+      25,
+    );
+    autoTable(doc, {
+      startY: 32,
+      head: [["Reg No", "Name", "Status", "Revenue", "Op Cost", "ROI %", "Eff km/L"]],
+      body: perVehicle.map((r) => [r.regNo, r.name, r.status, r.revenue, r.opCost, r.roi, r.efficiency]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [232, 121, 58] },
+    });
+    doc.save("transitops-fleet-report.pdf");
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Button variant="secondary" onClick={exportPdf}><FileText className="h-4 w-4" /> Export PDF</Button>
         <Button variant="secondary" onClick={exportCsv}><Download className="h-4 w-4" /> Export CSV</Button>
       </div>
 
