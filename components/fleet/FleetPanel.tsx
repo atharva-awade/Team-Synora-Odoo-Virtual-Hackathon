@@ -25,10 +25,10 @@ export function FleetPanel() {
   const c = (s: string) => vs.filter((v: any) => v.status === s).length;
 
   return (
-    <div className="card relative overflow-hidden p-0" style={{ height: 320 }}>
-      <div className="absolute inset-0 grid-bg opacity-50" />
+    <div className="card relative overflow-hidden p-0" style={{ height: 380 }}>
+      <div className="absolute inset-0 grid-bg opacity-40" />
       <div className="absolute inset-0">
-        <FleetShowcase />
+        <FleetShowcase vehicles={vs} />
       </div>
       <div className="pointer-events-none absolute left-5 top-4">
         <h2 className="text-lg font-semibold">Your Fleet in 3D</h2>
