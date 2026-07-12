@@ -11,6 +11,7 @@ import {
   Fuel,
   BarChart3,
   Settings,
+  Globe2,
 } from "lucide-react";
 import { RBAC, type Role } from "@/lib/constants";
 import { Brand } from "./Brand";
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/fleet", label: "Fleet", icon: Truck, section: "fleet" },
   { href: "/drivers", label: "Drivers", icon: Users, section: "drivers" },
   { href: "/trips", label: "Trips", icon: Route, section: "trips" },
+  { href: "/command", label: "Live Map", icon: Globe2, section: null },
   { href: "/maintenance", label: "Maintenance", icon: Wrench, section: "maintenance" },
   { href: "/fuel", label: "Fuel & Expenses", icon: Fuel, section: "fuel" },
   { href: "/analytics", label: "Analytics", icon: BarChart3, section: "analytics" },
