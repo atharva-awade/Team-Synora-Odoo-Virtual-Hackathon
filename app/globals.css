@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
+/* Class based dark mode: `dark:` utilities apply inside .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light theme is the default (premium light) */
 :root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --line: #e2e5ea;
+  --ink: #16171c;
+  --muted: #5f6472;
+  --accent: #e8793a;
+  --accent-2: #ef9a1e;
+  --blue: #2f6bff;
+  --grid-dot: rgba(15, 20, 35, 0.05);
+  --shadow: 0 1px 2px rgba(16, 23, 38, 0.06), 0 8px 24px -12px rgba(16, 23, 38, 0.12);
+}
+
+.dark {
   --bg: #09090b;
   --surface: #111114;
   --surface-2: #17171b;
@@ -10,6 +28,8 @@
   --accent: #e8793a;
   --accent-2: #f5a623;
   --blue: #4f8fff;
+  --grid-dot: rgba(255, 255, 255, 0.045);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
 @theme inline {
@@ -26,11 +46,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  background: var(--bg);
+}
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::-webkit-scrollbar {
@@ -41,24 +65,25 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a31;
+  background: color-mix(in srgb, var(--muted) 35%, transparent);
   border-radius: 8px;
   border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a44;
+  background: color-mix(in srgb, var(--muted) 55%, transparent);
 }
 
-/* Reusable surfaces and helpers */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
+  box-shadow: var(--shadow);
 }
 .panel {
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
   backdrop-filter: blur(14px);
   border: 1px solid var(--line);
+  box-shadow: var(--shadow);
 }
 .mono {
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -70,9 +95,8 @@ body {
   color: transparent;
 }
 
-/* Subtle dotted grid backdrop */
 .grid-bg {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.045) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
   background-size: 34px 34px;
 }
 .glow-accent {
@@ -81,43 +105,28 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 .animate-fade-in {
   animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes pulseDot {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
 }
 .live-dot {
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #34d399;
+  background: #10b981;
   animation: pulseDot 1.6s ease infinite;
 }
 
 @keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
+  100% { transform: translateX(100%); }
 }
 .skeleton {
   position: relative;
@@ -129,6 +138,6 @@ body {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--muted) 15%, transparent), transparent);
   animation: shimmer 1.4s infinite;
 }

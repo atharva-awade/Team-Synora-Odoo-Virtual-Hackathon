@@ -53,15 +53,17 @@ export function AnalyticsView({ data }: { data: Data }) {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueSeries} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#232329" vertical={false} />
-                <XAxis dataKey="label" stroke="#8b8b95" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#8b8b95" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
+                <XAxis dataKey="label" stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
                 <Tooltip
-                  cursor={{ fill: "rgba(232,121,58,0.08)" }}
-                  contentStyle={{ background: "#17171b", border: "1px solid #232329", borderRadius: 12, fontSize: 12 }}
+                  cursor={{ fill: "rgba(232,121,58,0.10)" }}
+                  contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 12, fontSize: 12, color: "var(--ink)" }}
+                  labelStyle={{ color: "var(--muted)" }}
+                  itemStyle={{ color: "var(--ink)" }}
                   formatter={(v: any) => [formatINR(v), "Revenue"]}
                 />
-                <Bar dataKey="revenue" fill="#e8793a" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="var(--accent)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

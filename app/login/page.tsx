@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { Brand } from "@/components/app/Brand";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { Button, Input, Field } from "@/components/ui/primitives";
 import { ROLE_LABELS, ROLE_BLURB, ROLES, type Role } from "@/lib/constants";
 
@@ -63,6 +64,9 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="fixed right-4 top-4 z-20">
+        <ThemeToggle />
+      </div>
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden border-r border-line bg-surface/40 p-10 lg:flex grid-bg">
         <div className="pointer-events-none absolute -left-20 top-1/3 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Search, LogOut } from "lucide-react";
 import { ROLE_LABELS, type Role } from "@/lib/constants";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Topbar({ user }: { user: { name: string; email: string; role: Role } }) {
   const router = useRouter();
@@ -39,9 +40,10 @@ export function Topbar({ user }: { user: { name: string; email: string; role: Ro
           </div>
           <span className="text-xs font-medium text-ink">{ROLE_LABELS[user.role]}</span>
         </div>
+        <ThemeToggle />
         <button
           onClick={logout}
-          className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+          className="rounded-lg border border-line p-2 text-muted transition-colors hover:bg-surface-2 hover:text-ink"
           title="Sign out"
         >
           <LogOut className="h-4 w-4" />
