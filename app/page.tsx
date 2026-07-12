@@ -1,112 +1,140 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, ChevronDown } from "lucide-react";
 import { Brand } from "@/components/app/Brand";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
-import { HeroShowcase } from "@/components/hero/HeroShowcase";
 import { CountUp } from "@/components/ui/Kpi";
+import { useStory } from "@/lib/story-store";
 
-const FEATURES = [
-  { icon: Rocket, title: "Smart Dispatch", desc: "Optimal vehicle and driver pairing with explainable scoring and hard business-rule enforcement." },
-  { icon: MapPin, title: "Live Operations", desc: "Real-time dispatch board and status transitions across the whole fleet." },
-  { icon: Wrench, title: "Predictive Maintenance", desc: "Service-due forecasting and a workflow that pulls vehicles from the pool automatically." },
-  { icon: Fuel, title: "Cost Intelligence", desc: "Fuel, tolls and maintenance rolled into automatic operational cost per vehicle." },
-  { icon: BarChart3, title: "ROI Analytics", desc: "Utilization, fuel efficiency and vehicle ROI with one-click CSV export." },
-  { icon: ShieldCheck, title: "Compliance Radar", desc: "Licence validity and safety scores tracked continuously, blocking unsafe dispatch." },
+const StoryCanvas = dynamic(() => import("@/components/hero/StoryCanvas"), {
+  ssr: false,
+  loading: () => <div className="flex h-full w-full items-center justify-center text-sm text-muted">Loading 3D fleet...</div>,
+});
+
+const CHAPTERS = [
+  { key: "intro", eyebrow: "Team Synora · Odoo Hackathon 2026", title: "The living 3D command center for your fleet.", desc: "Vehicles, drivers, dispatch, maintenance and cost unified into one real-time operations platform.", intro: true, icon: Rocket },
+  { key: "dispatch", eyebrow: "01 · Dispatch", title: "Smart Dispatch", desc: "Assign the optimal vehicle and driver with explainable scoring and hard business-rule enforcement.", icon: Rocket },
+  { key: "tracking", eyebrow: "02 · Live Tracking", title: "Live Tracking", desc: "Watch every dispatched trip move along its route on a real map, in real time.", icon: MapPin },
+  { key: "maintenance", eyebrow: "03 · Maintenance", title: "Predictive Maintenance", desc: "Forecast service intervals and pull vehicles from the dispatch pool automatically.", icon: Wrench },
+  { key: "fuel", eyebrow: "04 · Fuel and Cost", title: "Cost Intelligence", desc: "Fuel, tolls and maintenance rolled into automatic operational cost per vehicle.", icon: Fuel },
+  { key: "analytics", eyebrow: "05 · Analytics", title: "ROI Analytics", desc: "Utilization, fuel efficiency and vehicle ROI with one-click export.", icon: BarChart3 },
+  { key: "compliance", eyebrow: "06 · Compliance", title: "Compliance Radar", desc: "Licence validity and safety scores tracked continuously, blocking unsafe dispatch.", icon: ShieldCheck },
 ];
 
+const FEATURES = CHAPTERS.slice(1);
+
+function ChapterOverlay() {
+  const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
+  const c = CHAPTERS[idx];
+  const Icon = c.icon;
+  return (
+    <div className="pointer-events-none absolute inset-0 flex items-center">
+      <div key={c.key} className="animate-fade-in max-w-xl px-6 sm:px-10 lg:pl-16">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1 text-xs text-muted backdrop-blur">
+          <Icon className="h-3.5 w-3.5 text-accent" /> {c.eyebrow}
+        </div>
+        {c.intro ? (
+          <>
+            <h1 className="text-4xl font-semibold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
+              The living <span className="text-gradient">3D command center</span> for your fleet.
+            </h1>
+            <p className="mt-5 max-w-md text-base text-muted sm:text-lg">{c.desc}</p>
+            <div className="pointer-events-auto mt-7 flex flex-wrap gap-3">
+              <Link href="/login" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
+                <Rocket className="h-4 w-4" /> Launch Command Center
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">{c.title}</h2>
+            <p className="mt-4 max-w-md text-base text-muted sm:text-lg">{c.desc}</p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProgressRail() {
+  const idx = useStory((s) => Math.max(0, Math.min(6, Math.round(s.progress * 6))));
+  return (
+    <div className="pointer-events-none absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-2">
+      {CHAPTERS.map((c, i) => (
+        <span key={c.key} className={`h-1.5 rounded-full transition-all duration-300 ${i === idx ? "w-8 bg-accent" : "w-1.5 bg-muted/40"}`} />
+      ))}
+    </div>
+  );
+}
+
 export default function Landing() {
+  const stageRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.1 });
+    const lenis = new Lenis({ lerp: 0.09 });
     let raf = 0;
-    const loop = (t: number) => {
-      lenis.raf(t);
-      raf = requestAnimationFrame(loop);
-    };
+    const loop = (t: number) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
 
     gsap.registerPlugin(ScrollTrigger);
     lenis.on("scroll", ScrollTrigger.update);
 
+    const st = ScrollTrigger.create({
+      trigger: stageRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: true,
+      onUpdate: (self) => useStory.getState().set(self.progress),
+    });
+
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 42,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 88%" },
-        });
+        gsap.from(el, { opacity: 0, y: 40, duration: 0.85, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 88%" } });
       });
     });
 
-    return () => {
-      ctx.revert();
-      cancelAnimationFrame(raf);
-      lenis.destroy();
-    };
+    return () => { st.kill(); ctx.revert(); cancelAnimationFrame(raf); lenis.destroy(); };
   }, []);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      {/* Nav */}
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/70 backdrop-blur-md">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg/60 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <Brand />
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-accent to-accent-2 px-4 py-2 text-sm font-medium text-black transition hover:brightness-110"
-            >
+            <Link href="/login" className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-accent to-accent-2 px-4 py-2 text-sm font-medium text-black transition hover:brightness-110">
               Sign In <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 lg:grid-cols-2 lg:py-24">
-        <div className="pointer-events-none absolute -left-40 top-10 h-96 w-96 rounded-full bg-accent/15 blur-3xl" />
-        <div className="relative">
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs text-muted">
-            <Sparkles className="h-3.5 w-3.5 text-accent" /> Team Synora · Odoo Hackathon 2026
+      {/* Pinned scroll-driven 3D story */}
+      <section ref={stageRef} className="relative" style={{ height: "680vh" }}>
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <div className="absolute inset-0 grid-bg opacity-60" />
+          <div className="absolute inset-0">
+            <StoryCanvas />
           </div>
-          <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-            The living <span className="text-gradient">3D command center</span> for your fleet.
-          </h1>
-          <p className="mt-5 max-w-md text-lg text-muted">
-            TransitOps digitizes vehicles, drivers, dispatch, maintenance and cost into one real-time operations platform that runs, decides and watches your fleet.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110"
-            >
-              <Rocket className="h-4 w-4" /> Launch Command Center
-            </Link>
-            <a
-              href="#features"
-              className="inline-flex items-center gap-2 rounded-xl border border-line px-6 py-3 font-medium text-ink transition hover:bg-surface-2"
-            >
-              Explore Features
-            </a>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-bg via-bg/50 to-transparent" />
+          <ChapterOverlay />
+          <ProgressRail />
+          <div className="pointer-events-none absolute bottom-7 right-8 flex items-center gap-1.5 text-xs text-muted">
+            Scroll to explore <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
           </div>
-        </div>
-
-        <div className="relative">
-          <HeroShowcase />
         </div>
       </section>
 
       {/* Stats */}
       <section className="border-y border-line bg-surface/40" data-reveal>
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-10 md:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-12 md:grid-cols-4">
           <Stat value={53} label="Vehicles managed" />
           <Stat value={81} suffix="%" label="Fleet utilization" />
           <Stat value={10} label="Business rules enforced" />
@@ -122,11 +150,7 @@ export default function Landing() {
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              data-reveal
-              className="group rounded-2xl border border-line bg-surface p-6 transition-all hover:-translate-y-1 hover:border-accent/40"
-            >
+            <div key={f.key} data-reveal className="group rounded-2xl border border-line bg-surface p-6 transition-all hover:-translate-y-1 hover:border-accent/40">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent/20">
                 <f.icon className="h-5 w-5" />
               </div>
@@ -143,10 +167,7 @@ export default function Landing() {
           <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
           <h2 className="relative text-3xl font-semibold tracking-tight sm:text-4xl">Ready to take command?</h2>
           <p className="relative mx-auto mt-3 max-w-md text-muted">Sign in with a demo role and dispatch your first trip in seconds.</p>
-          <Link
-            href="/login"
-            className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110"
-          >
+          <Link href="/login" className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
             <Rocket className="h-4 w-4" /> Launch Command Center
           </Link>
         </div>
