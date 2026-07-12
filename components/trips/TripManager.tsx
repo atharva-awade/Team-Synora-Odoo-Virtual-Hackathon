@@ -183,7 +183,7 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
             )}
 
             {overCapacity && selectedVehicle && (
-              <div className="flex items-start gap-2 rounded-lg border border-dashed border-rose-500/50 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-300">
+              <div className="flex items-start gap-2 rounded-lg border border-dashed border-rose-500/50 bg-rose-500/10 px-3 py-2.5 text-sm text-rose-600 dark:text-rose-300">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
                   Vehicle capacity: {selectedVehicle.maxLoadKg} kg · Cargo: {form.cargoWeightKg} kg.
@@ -215,7 +215,7 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
       <Card className="p-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold">Live Board</h2>
-          <span className="flex items-center gap-1.5 text-xs text-emerald-300"><span className="live-dot" /> auto-refresh</span>
+          <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-300"><span className="live-dot" /> auto-refresh</span>
         </div>
         <div className="max-h-[560px] space-y-2 overflow-y-auto pr-1">
           {trips.map((t) => (

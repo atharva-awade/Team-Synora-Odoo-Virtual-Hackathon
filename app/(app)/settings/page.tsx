@@ -55,8 +55,8 @@ export default async function SettingsPage() {
                       const a = access(role, s.key);
                       return (
                         <td key={s.key} className="py-2.5 text-center">
-                          {a === "full" && <Check className="mx-auto h-4 w-4 text-emerald-400" />}
-                          {a === "view" && <Eye className="mx-auto h-4 w-4 text-sky-400" />}
+                          {a === "full" && <Check className="mx-auto h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+                          {a === "view" && <Eye className="mx-auto h-4 w-4 text-sky-600 dark:text-sky-400" />}
                           {a === "none" && <Minus className="mx-auto h-4 w-4 text-muted/50" />}
                         </td>
                       );
@@ -67,8 +67,8 @@ export default async function SettingsPage() {
             </table>
           </div>
           <div className="mt-4 flex gap-4 text-xs text-muted">
-            <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-400" /> Full access</span>
-            <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5 text-sky-400" /> View only</span>
+            <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> Full access</span>
+            <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" /> View only</span>
             <span className="flex items-center gap-1"><Minus className="h-3.5 w-3.5 text-muted/50" /> No access</span>
           </div>
         </Card>

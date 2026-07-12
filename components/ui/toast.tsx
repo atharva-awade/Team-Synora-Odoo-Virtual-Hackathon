@@ -38,9 +38,9 @@ export function Toaster() {
           key={t.id}
           className={cn(
             "panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm shadow-xl animate-fade-in",
-            t.kind === "success" && "text-emerald-300",
-            t.kind === "error" && "text-rose-300",
-            t.kind === "info" && "text-sky-300",
+            t.kind === "success" && "text-emerald-600 dark:text-emerald-300",
+            t.kind === "error" && "text-rose-600 dark:text-rose-300",
+            t.kind === "info" && "text-sky-600 dark:text-sky-300",
           )}
         >
           {t.kind === "success" && <CheckCircle2 className="h-4 w-4" />}

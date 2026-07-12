@@ -110,7 +110,7 @@ export function AnalyticsView({ data }: { data: Data }) {
             {costliest.length === 0 && <div className="py-6 text-center text-sm text-muted">No cost data yet.</div>}
           </div>
           <div className="mt-5 flex items-center gap-2 border-t border-line pt-4 text-xs text-muted">
-            <Leaf className="h-4 w-4 text-emerald-400" />
+            <Leaf className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             Fleet carbon footprint: <span className="font-medium text-ink">{formatNumber(totals.totalCo2)} kg CO2</span>
           </div>
         </Card>
@@ -137,10 +137,13 @@ export function AnalyticsView({ data }: { data: Data }) {
                   <td className="py-2.5 text-muted">{formatINR(v.opCost)}</td>
                   <td className="py-2.5 text-muted">{v.efficiency} km/L</td>
                   <td className="py-2.5">
-                    <span className={v.roi >= 0 ? "text-emerald-300" : "text-rose-300"}>{v.roi}%</span>
+                    <span className={v.roi >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-rose-600 dark:text-rose-300"}>{v.roi}%</span>
                   </td>
                 </tr>
               ))}
+              {roiRanked.length === 0 && (
+                <tr><td colSpan={5} className="py-8 text-center text-muted">No vehicle financials yet. Complete some trips to build the leaderboard.</td></tr>
+              )}
             </tbody>
           </table>
         </div>

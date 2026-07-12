@@ -62,8 +62,8 @@ export function DriverManager({ canEdit }: { canEdit: boolean }) {
 
   function expiryCell(iso: string) {
     const d = daysUntil(iso);
-    if (d < 0) return <span className="text-rose-300">{formatDate(iso)} · expired</span>;
-    if (d <= 30) return <span className="text-amber-300">{formatDate(iso)} · {d}d left</span>;
+    if (d < 0) return <span className="text-rose-600 dark:text-rose-300">{formatDate(iso)} · expired</span>;
+    if (d <= 30) return <span className="text-amber-600 dark:text-amber-300">{formatDate(iso)} · {d}d left</span>;
     return <span className="text-muted">{formatDate(iso)}</span>;
   }
 
@@ -104,7 +104,7 @@ export function DriverManager({ canEdit }: { canEdit: boolean }) {
                 <td className="py-2.5 text-muted">{d.category}</td>
                 <td className="py-2.5 text-xs">{expiryCell(d.licenseExpiry)}</td>
                 <td className="py-2.5">
-                  <span className={d.safetyScore >= 90 ? "text-emerald-300" : d.safetyScore >= 80 ? "text-amber-300" : "text-rose-300"}>{d.safetyScore}%</span>
+                  <span className={d.safetyScore >= 90 ? "text-emerald-600 dark:text-emerald-300" : d.safetyScore >= 80 ? "text-amber-600 dark:text-amber-300" : "text-rose-600 dark:text-rose-300"}>{d.safetyScore}%</span>
                 </td>
                 <td className="py-2.5">
                   {canEdit ? (
@@ -115,7 +115,7 @@ export function DriverManager({ canEdit }: { canEdit: boolean }) {
                 </td>
                 {canEdit && (
                   <td className="py-2.5 text-right">
-                    <button onClick={() => delM.mutate(d.id)} title="Delete driver" className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-rose-300"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => delM.mutate(d.id)} title="Delete driver" className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-rose-500"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 )}
               </tr>

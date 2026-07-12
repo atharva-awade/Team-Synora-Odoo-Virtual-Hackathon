@@ -146,7 +146,7 @@ export function VehicleManager({ canEdit }: { canEdit: boolean }) {
                         <button
                           onClick={() => patchM.mutate({ id: v.id, body: { status: "RETIRED" } })}
                           title="Retire vehicle"
-                          className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-amber-300"
+                          className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-amber-500"
                         >
                           <Archive className="h-4 w-4" />
                         </button>
@@ -154,7 +154,7 @@ export function VehicleManager({ canEdit }: { canEdit: boolean }) {
                       <button
                         onClick={() => delM.mutate(v.id)}
                         title="Delete vehicle"
-                        className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-rose-300"
+                        className="rounded-md p-1.5 text-muted hover:bg-surface-2 hover:text-rose-500"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

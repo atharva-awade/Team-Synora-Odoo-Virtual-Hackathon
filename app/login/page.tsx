@@ -108,7 +108,7 @@ export default function LoginPage() {
               <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" />
             </Field>
             {error && (
-              <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+              <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-600 dark:text-rose-300">
                 {error}
               </div>
             )}
