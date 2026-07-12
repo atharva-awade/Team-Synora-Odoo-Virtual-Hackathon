@@ -5,6 +5,12 @@ import { haversineKm } from "../lib/utils";
 
 const prisma = new PrismaClient();
 
+// 1x1 transparent PNG base64
+const PLACEHOLDER_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAGggJ/PchI7wAAAABJRU5ErkJggg==",
+  "base64"
+);
+
 function dist(a: string, b: string): number {
   return haversineKm(CITIES[a], CITIES[b]);
 }
@@ -20,6 +26,8 @@ async function main() {
   await prisma.expense.deleteMany();
   await prisma.maintenanceLog.deleteMany();
   await prisma.trip.deleteMany();
+  await prisma.vehicleInspection.deleteMany();
+  await prisma.vehicleArTarget.deleteMany();
   await prisma.vehicle.deleteMany();
   await prisma.driver.deleteMany();
   await prisma.user.deleteMany();
@@ -59,6 +67,18 @@ async function main() {
   const v6 = await mk({ regNo: "GJ05CD7788", name: "Mahindra Furio 7", type: "Truck", maxLoadKg: 9000, odometer: 54000, acquisitionCost: 2100000, status: "ON_TRIP", region: "Rajkot", modelKey: "truck" });
   const v7 = await mk({ regNo: "GJ01AB2299", name: "Maruti Super Carry", type: "Van", maxLoadKg: 740, odometer: 33000, acquisitionCost: 560000, status: "AVAILABLE", region: "Gandhinagar", modelKey: "van" });
   const v8 = await mk({ regNo: "GJ06EF5567", name: "BharatBenz 1415R", type: "Truck", maxLoadKg: 10000, odometer: 98000, acquisitionCost: 2600000, status: "AVAILABLE", region: "Surat", modelKey: "truck", lastServiceOdo: 89500 });
+
+  // Create AR targets for all vehicles (placeholder data - in production would generate real targets)
+  const vehicles = [v1, v2, v3, v4, v5, v6, v7, v8];
+  for (const v of vehicles) {
+    await prisma.vehicleArTarget.create({
+      data: {
+        vehicleId: v.id,
+        pngData: PLACEHOLDER_PNG,
+        mindData: null,
+      },
+    });
+  }
 
   // Drivers (one expired licence + suspended, one licence expiring soon).
   const dk = ({ expiry, ...rest }: { name: string; licenseNo: string; category: string; expiry: Date; contact: string; safetyScore: number; status: string; region: string }) =>

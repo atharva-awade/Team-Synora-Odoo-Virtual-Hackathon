@@ -44,6 +44,8 @@ model Vehicle {
   maintenance MaintenanceLog[]
   fuelLogs    FuelLog[]
   expenses    Expense[]
+  inspections VehicleInspection[]
+  arTarget    VehicleArTarget?
 }
 
 model Driver {
@@ -142,4 +144,33 @@ model ActivityLog {
   entity    String
   detail    String   @default("")
   createdAt DateTime @default(now())
+}
+
+model VehicleInspection {
+  id              String   @id @default(cuid())
+  vehicleId       String
+  inspectorId     String
+  tirePressureFl  Int?
+  tirePressureFr  Int?
+  tirePressureRl  Int?
+  tirePressureRr  Int?
+  fuelLevelPct    Int?
+  odometerReading Int?
+  damageItems     String   @default("[]") // JSON array
+  notes           String?
+  overallStatus   String   @default("OK") // OK | ISSUES_FOUND | REQUIRES_MAINTENANCE
+  createdAt       DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleArTarget {
+  id            String   @id @default(cuid())
+  vehicleId     String   @unique
+  pngData       Bytes
+  mindData      Bytes?
+  targetGeneratedAt DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
 }
