@@ -41,12 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# tooling artifacts - do not commit
-.claude/
-CLAUDE.md
-AGENTS.md
-.mcp.json
-.cursor/
+# local editor and machine files
+.vscode/
+.idea/
 *.local
 settings.local.json
 
