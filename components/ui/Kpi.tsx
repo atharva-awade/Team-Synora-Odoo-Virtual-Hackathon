@@ -17,8 +17,8 @@ export function CountUp({
   suffix?: string;
   prefix?: string;
 }) {
-  const [display, setDisplay] = useState(value);
-  const from = useRef(value);
+  const [display, setDisplay] = useState(0);
+  const from = useRef(0);
 
   useEffect(() => {
     const start = from.current;
@@ -64,7 +64,7 @@ export function KpiCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="card group relative overflow-hidden p-4 transition-colors hover:border-white/15">
+    <div className="card glass card-hover group relative overflow-hidden p-4">
       <div className="absolute left-0 top-0 h-full w-1" style={{ background: accent }} />
       <div
         className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 blur-2xl transition-opacity group-hover:opacity-40"

@@ -9,7 +9,7 @@ const button = cva(
       variant: {
         primary:
           "bg-gradient-to-br from-accent to-accent-2 text-black hover:brightness-110 shadow-lg shadow-accent/20",
-        secondary: "bg-surface-2 text-ink border border-line hover:border-white/20",
+        secondary: "bg-surface-2 text-ink border border-line hover:border-accent/40",
         ghost: "text-muted hover:text-ink hover:bg-surface-2",
         danger: "bg-rose-500/90 text-white hover:bg-rose-500",
         outline: "border border-line text-ink hover:bg-surface-2",
@@ -52,7 +52,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       <input
         ref={ref}
         className={cn(
-          "h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm text-ink placeholder:text-muted/60 focus:border-accent/60 focus:outline-none",
+          "h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm text-ink placeholder:text-muted/60 focus:border-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           className,
         )}
         {...props}
@@ -65,7 +65,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   return (
     <select
       className={cn(
-        "h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm text-ink focus:border-accent/60 focus:outline-none",
+        "h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm text-ink focus:border-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
         className,
       )}
       {...props}
@@ -79,7 +79,7 @@ export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<H
   return (
     <textarea
       className={cn(
-        "min-h-[80px] w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted/60 focus:border-accent/60 focus:outline-none",
+        "min-h-[80px] w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-ink placeholder:text-muted/60 focus:border-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
         className,
       )}
       {...props}

@@ -87,6 +87,31 @@ body {
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
 }
+
+/* Liquid glass surfaces */
+.glass {
+  background: color-mix(in srgb, var(--surface) 66%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow: var(--shadow), inset 0 1px 0 color-mix(in srgb, #ffffff 14%, transparent);
+}
+.glass-strong {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 20px;
+  box-shadow: var(--shadow), inset 0 1px 0 color-mix(in srgb, #ffffff 16%, transparent);
+}
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent), 0 18px 40px -16px color-mix(in srgb, var(--accent) 30%, transparent);
+}
 .mono {
   font-family: var(--font-mono), ui-monospace, monospace;
 }
