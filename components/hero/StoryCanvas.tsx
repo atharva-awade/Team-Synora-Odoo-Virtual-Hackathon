@@ -74,12 +74,12 @@ export default function StoryCanvas() {
     >
       <ambientLight intensity={0.6} />
       <directionalLight position={[6, 10, 6]} intensity={1.8} castShadow shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[-6, 4, -6]} intensity={0.6} color="#e8793a" />
+      <directionalLight position={[-6, 4, -6]} intensity={0.6} color="#875A7B" />
       <spotLight position={[0, 9, 0]} intensity={0.5} angle={0.6} penumbra={1} />
       <Suspense fallback={null}>
         <Truck />
       </Suspense>
-      <ContactShadows position={[0, 0, 0]} opacity={0.45} scale={26} blur={2.6} far={9} />
+      <ContactShadows position={[0, 0, 0]} opacity={0.28} scale={13} blur={3.4} far={6} color="#2b1e2e" />
       <Rig />
     </Canvas>
   );

@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
-import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, ChevronDown, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Rocket, MapPin, Wrench, Fuel, BarChart3, ShieldCheck, ChevronDown, CheckCircle2, Truck, Gauge, Clock } from "lucide-react";
 import { Brand } from "@/components/app/Brand";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { CountUp } from "@/components/ui/Kpi";
@@ -88,7 +88,7 @@ function BottomBar() {
         <div className="flex flex-col items-center gap-4">
           <Link
             href="/login"
-            className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110"
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 font-medium text-white shadow-lg shadow-accent/25 transition hover:brightness-110"
           >
             <Rocket className="h-4 w-4" /> Launch Command Center
           </Link>
@@ -118,17 +118,29 @@ function HudChips() {
   const op = useStory((s) => Math.max(0, Math.min(1, 1 - s.progress * 9)));
   return (
     <div className="pointer-events-none absolute inset-0 z-10 hidden lg:block" style={{ opacity: op }}>
-      <div className="glass absolute left-[7%] top-[34%] rounded-xl px-3.5 py-2.5">
-        <div className="flex items-center gap-2 text-sm"><span className="live-dot" /> 2 active trips</div>
-        <div className="mt-0.5 text-[11px] text-muted">Ahmedabad · Rajkot</div>
+      <div className="animate-float absolute left-[6%] top-[27%]" style={{ animationDelay: "0s" }}>
+        <div className="glass rounded-2xl px-4 py-3">
+          <div className="flex items-center gap-2 text-sm font-medium"><span className="live-dot" /> 2 active trips</div>
+          <div className="mt-0.5 text-[11px] text-muted">Ahmedabad to Rajkot</div>
+        </div>
       </div>
-      <div className="glass absolute right-[7%] top-[42%] rounded-xl px-3.5 py-2.5 text-right">
-        <div className="text-[11px] text-muted">Fleet utilization</div>
-        <div className="text-lg font-semibold">81%</div>
+      <div className="animate-float absolute left-[8%] top-[58%]" style={{ animationDelay: "-2.4s" }}>
+        <div className="glass flex items-center gap-3 rounded-2xl px-4 py-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/15 text-accent"><Truck className="h-4 w-4" /></div>
+          <div><div className="text-lg font-semibold leading-none">53</div><div className="mt-1 text-[11px] text-muted">vehicles managed</div></div>
+        </div>
       </div>
-      <div className="glass absolute right-[13%] top-[64%] rounded-xl px-3.5 py-2.5 text-right">
-        <div className="text-[11px] text-muted">On-time rate</div>
-        <div className="text-lg font-semibold">96%</div>
+      <div className="animate-float absolute right-[6%] top-[33%] text-right" style={{ animationDelay: "-1.2s" }}>
+        <div className="glass rounded-2xl px-4 py-3">
+          <div className="flex items-center justify-end gap-1.5 text-[11px] text-muted"><Gauge className="h-3.5 w-3.5" /> Fleet utilization</div>
+          <div className="mt-1 text-2xl font-semibold text-gradient">81%</div>
+        </div>
+      </div>
+      <div className="animate-float absolute right-[9%] top-[62%] text-right" style={{ animationDelay: "-3.6s" }}>
+        <div className="glass rounded-2xl px-4 py-3">
+          <div className="flex items-center justify-end gap-1.5 text-[11px] text-muted"><Clock className="h-3.5 w-3.5" /> On-time rate</div>
+          <div className="mt-1 text-2xl font-semibold">96%</div>
+        </div>
       </div>
     </div>
   );
@@ -172,7 +184,7 @@ export default function Landing() {
           <Brand />
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/login" className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-accent to-accent-2 px-4 py-2 text-sm font-medium text-black transition hover:brightness-110">
+            <Link href="/login" className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-accent to-accent-2 px-4 py-2 text-sm font-medium text-white transition hover:brightness-110">
               Sign In <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -181,15 +193,26 @@ export default function Landing() {
 
       {/* Fixed 3D stage: truck locked at screen center, camera orbits on scroll */}
       <div className={`pointer-events-none fixed inset-0 z-0 transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}>
-        <div className="absolute inset-0 grid-bg opacity-[0.35]" />
-        <div className="absolute -left-40 top-1/4 h-[36rem] w-[36rem] rounded-full bg-accent/10 blur-[130px]" />
-        <div className="absolute -right-40 bottom-1/4 h-[32rem] w-[32rem] rounded-full bg-blue/10 blur-[130px]" />
+        {/* dotted grid, brightest near the stage center and fading to the edges */}
+        <div
+          className="absolute inset-0 grid-bg opacity-70"
+          style={{
+            maskImage: "radial-gradient(ellipse 70% 60% at 50% 55%, black 30%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 55%, black 30%, transparent 75%)",
+          }}
+        />
+        {/* aurora glows behind the truck */}
+        <div className="animate-aurora absolute -left-40 top-[10%] h-[42rem] w-[42rem] rounded-full bg-accent/25 blur-[140px]" />
+        <div className="animate-aurora absolute -right-48 top-[26%] h-[38rem] w-[38rem] rounded-full bg-blue/20 blur-[140px]" style={{ animationDelay: "-9s" }} />
+        {/* soft stage spotlight grounding the truck */}
+        <div className="absolute left-1/2 top-[54%] h-[34rem] w-[54rem] -translate-x-1/2 rounded-[50%] bg-accent/20 blur-[120px]" />
         <div className="absolute inset-0">
           <StoryCanvas />
         </div>
+        {/* edge vignette for depth */}
         <div
           className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at 50% 62%, transparent 42%, color-mix(in srgb, var(--bg) 78%, transparent) 100%)" }}
+          style={{ background: "radial-gradient(ellipse at 50% 60%, transparent 40%, color-mix(in srgb, var(--bg) 82%, transparent) 100%)" }}
         />
         <HudChips />
         <TopHero />
@@ -303,7 +326,7 @@ export default function Landing() {
             <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
             <h2 className="relative text-3xl font-semibold tracking-tight sm:text-4xl">Ready to take command?</h2>
             <p className="relative mx-auto mt-3 max-w-md text-muted">Sign in with a demo role and dispatch your first trip in seconds.</p>
-            <Link href="/login" className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3 font-medium text-black shadow-lg shadow-accent/25 transition hover:brightness-110">
+            <Link href="/login" className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3 font-medium text-white shadow-lg shadow-accent/25 transition hover:brightness-110">
               <Rocket className="h-4 w-4" /> Launch Command Center
             </Link>
           </div>
