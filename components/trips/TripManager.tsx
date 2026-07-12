@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Rocket, Loader2, Check, X, Send, AlertTriangle, Sparkles } from "lucide-react";
+import { Rocket, Loader2, Check, X, Send, AlertTriangle, Sparkles, Mic } from "lucide-react";
 import { jsonFetch } from "@/lib/client";
 import { Button, Input, Select, Field, Card } from "@/components/ui/primitives";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -36,6 +36,7 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
   const [fuel, setFuel] = useState("");
   const [suggestion, setSuggestion] = useState<any>(null);
   const [suggesting, setSuggesting] = useState(false);
+  const [listening, setListening] = useState(false);
 
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: () => jsonFetch("/api/trips"), refetchInterval: 4000 });
   const vehiclesQ = useQuery({ queryKey: ["vehicles", "dispatchable"], queryFn: () => jsonFetch("/api/vehicles?dispatchable=1") });
@@ -94,6 +95,33 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
       toast("Could not compute a suggestion", "error");
     }
     setSuggesting(false);
+  }
+
+  function startVoice() {
+    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      toast("Voice input is not supported in this browser", "error");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "en-IN";
+    rec.interimResults = false;
+    setListening(true);
+    rec.onresult = (e: any) => {
+      const t: string = e.results[0][0].transcript;
+      const lower = t.toLowerCase().replace(/,/g, "");
+      const nums = (lower.match(/\d+(\.\d+)?/g) || []).map(Number);
+      const odoM = lower.match(/odometer\D*(\d+)/);
+      const fuelM = lower.match(/(?:fuel|lit(?:re|er)s?)\D*(\d+)/);
+      const o = odoM?.[1] ?? (nums[0] != null ? String(nums[0]) : "");
+      const f = fuelM?.[1] ?? (nums[1] != null ? String(nums[1]) : "");
+      if (o) setOdo(o);
+      if (f) setFuel(f);
+      toast(`Heard: ${t}`, "info");
+    };
+    rec.onerror = () => toast("Could not capture voice", "error");
+    rec.onend = () => setListening(false);
+    rec.start();
   }
 
   return (
@@ -242,6 +270,10 @@ export function TripManager({ canEdit }: { canEdit: boolean }) {
             <Field label="Final Odometer (km)"><Input type="number" value={odo} onChange={(e) => setOdo(e.target.value)} required /></Field>
             <Field label="Fuel Consumed (L)"><Input type="number" value={fuel} onChange={(e) => setFuel(e.target.value)} required /></Field>
           </div>
+          <button type="button" onClick={startVoice} className="flex w-full items-center justify-center gap-2 rounded-lg border border-line py-2 text-sm text-muted transition-colors hover:text-ink">
+            <Mic className={`h-4 w-4 ${listening ? "animate-pulse text-rose-400" : "text-accent"}`} />
+            {listening ? "Listening..." : "Fill by voice (say: odometer 45200 fuel 30)"}
+          </button>
           <div className="flex justify-end gap-2 pt-1">
             <Button type="button" variant="secondary" onClick={() => setCompleting(null)}>Cancel</Button>
             <Button type="submit" disabled={actionM.isPending}>{actionM.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Complete Trip"}</Button>

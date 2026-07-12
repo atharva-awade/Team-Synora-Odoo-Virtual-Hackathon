@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Fuel, Plus, Loader2, Receipt } from "lucide-react";
+import { Fuel, Plus, Loader2, Receipt, Camera } from "lucide-react";
 import { jsonFetch } from "@/lib/client";
 import { Button, Input, Select, Field, Card } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
@@ -15,6 +15,7 @@ export function FuelManager({ canEdit }: { canEdit: boolean }) {
   const [expOpen, setExpOpen] = useState(false);
   const [fuelForm, setFuelForm] = useState<any>({ vehicleId: "", liters: 40, cost: "", odometer: "" });
   const [expForm, setExpForm] = useState<any>({ vehicleId: "", type: "TOLL", amount: 500, note: "" });
+  const [scanning, setScanning] = useState(false);
 
   const dataQ = useQuery({ queryKey: ["fuel"], queryFn: () => jsonFetch("/api/fuel") });
   const vehiclesQ = useQuery({ queryKey: ["vehicles", "all"], queryFn: () => jsonFetch("/api/vehicles") });
@@ -35,6 +36,25 @@ export function FuelManager({ canEdit }: { canEdit: boolean }) {
     onSuccess: () => { invalidate(); toast("Expense recorded"); setExpOpen(false); },
     onError: (e: any) => toast(e.message, "error"),
   });
+
+  async function scanReceipt(file: File) {
+    setScanning(true);
+    try {
+      const Tesseract = (await import("tesseract.js")).default;
+      const { data } = await Tesseract.recognize(file, "eng");
+      const clean = (data.text || "").replace(/\n/g, " ");
+      const litreM = clean.match(/(\d+(?:\.\d+)?)\s*(?:L|LTR|LITRES?|LITERS?)\b/i);
+      const amtM = clean.match(/(?:AMOUNT|TOTAL|RS\.?|INR)\s*[:.]?\s*(\d+(?:\.\d+)?)/i);
+      const nums = (clean.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+      const liters = litreM?.[1] ?? (nums[0] != null ? String(nums[0]) : "");
+      const cost = amtM?.[1] ?? (nums.length ? String(Math.max(...nums)) : "");
+      setFuelForm((f: any) => ({ ...f, liters: liters || f.liters, cost: cost || f.cost }));
+      toast("Receipt scanned", "success");
+    } catch {
+      toast("Could not read the receipt", "error");
+    }
+    setScanning(false);
+  }
 
   return (
     <div className="space-y-4">
@@ -123,6 +143,11 @@ export function FuelManager({ canEdit }: { canEdit: boolean }) {
             <Field label="Cost (auto if blank)"><Input type="number" value={fuelForm.cost} onChange={(e) => setFuelForm({ ...fuelForm, cost: e.target.value })} placeholder="litres x 95" /></Field>
             <Field label="Odometer"><Input type="number" value={fuelForm.odometer} onChange={(e) => setFuelForm({ ...fuelForm, odometer: e.target.value })} /></Field>
           </div>
+          <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-line py-2.5 text-sm text-muted transition-colors hover:text-ink">
+            <Camera className={`h-4 w-4 ${scanning ? "animate-pulse text-rose-400" : "text-accent"}`} />
+            {scanning ? "Reading receipt..." : "Scan a fuel receipt to auto-fill"}
+            <input type="file" accept="image/*" className="hidden" disabled={scanning} onChange={(e) => { const f = e.target.files?.[0]; if (f) scanReceipt(f); }} />
+          </label>
           <div className="flex justify-end gap-2"><Button type="button" variant="secondary" onClick={() => setFuelOpen(false)}>Cancel</Button><Button type="submit" disabled={fuelM.isPending}>{fuelM.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Log Fuel"}</Button></div>
         </form>
       </Modal>
